@@ -452,6 +452,7 @@ function ac(){
   try{ if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();
        MASTER=AC.createGain();MASTER.gain.value=.9;MASTER.connect(AC.destination);} }catch(e){return null;}
   if(AC.state==='suspended')AC.resume();
+  try{ if(navigator.audioSession)navigator.audioSession.type='playback'; }catch(e){}
   return AC;
 }
 function note(f,dur,opts){
@@ -491,6 +492,12 @@ const sfx={
   wrong(){note(160,1,{type:'sawtooth',gain:.07,slide:55});note(110,1.2,{type:'square',gain:.035,at:.1,slide:40});},
   padav(){[392,523.25,659.25].forEach((f,i)=>note(f,.5,{type:'triangle',gain:.06,at:i*.13}));},
   quit(){[440,392,349.23].forEach((f,i)=>note(f,.5,{type:'sine',gain:.05,at:i*.17}));},
+  question(){note(587.33,.16,{type:'triangle',gain:.05});note(880,.3,{type:'triangle',gain:.055,at:.14});hit(.18,.03,1400);},
+  fifty(){[880,659.25].forEach((f,i)=>note(f,.22,{type:'square',gain:.045,at:i*.12}));hit(.3,.04,2200);},
+  poll(){hit(.7,.05,900);note(220,.7,{type:'sawtooth',gain:.035,slide:440});
+         [0,.12,.24].forEach((at,i)=>note(330+i*110,.3,{type:'triangle',gain:.03,at}));},
+  expert(){[0,.45].forEach(at=>{note(440,.18,{type:'sine',gain:.05,at});note(554.37,.18,{type:'sine',gain:.05,at:at+.2});});},
+  flip(){note(300,.45,{type:'triangle',gain:.05,slide:900});hit(.45,.05,3000);},
   win(){[523.25,659.25,783.99,1046.5,1318.5,1568].forEach((f,i)=>note(f,.6,{type:'triangle',gain:.08,at:i*.14}));
     [0,.14,.28,.42,.56,.7].forEach(at=>setTimeout(()=>hit(.2,.05,1200),at*1000));}
 };
@@ -546,6 +553,7 @@ function cue(name){
     return;
   }
   if(sfx[name])sfx[name]();
+  else sfx.pick();            /* an unmapped cue should still make a sound, not vanish */
 }
 function banter(){                                  /* one clip in four, between questions */
   if(!SOUND)return;
