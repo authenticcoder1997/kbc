@@ -551,6 +551,7 @@ function newGame(name){
   if(/^arya$/i.test(S.name))loveNote();
 }
 function loveNote(){
+  document.querySelectorAll('.love').forEach(function(x){x.remove();});
   const d=document.createElement('div');
   d.className='love';
   d.innerHTML='Parag <span class="hrt">\u2665</span> Arya';
@@ -805,7 +806,7 @@ function endGame(how){
 /* ---------- chrome ---------- */
 $('#sound').onclick=e=>{SOUND=!SOUND;if(!SOUND)stopBed();e.target.setAttribute('aria-pressed',SOUND);
   e.target.textContent=SOUND?'Sound on':'Sound off';if(SOUND)sfx.pick();};
-$('#restart').onclick=()=>startScreen();
+$('#restart').onclick=()=>{document.querySelectorAll('.love').forEach(x=>x.remove());startScreen();};
 
 /* first paint: a live board behind the start sheet */
 S={name:'Aap',i:0,banked:0,over:false,locked:false,sel:null,used:BANK.map(()=>new Set()),
