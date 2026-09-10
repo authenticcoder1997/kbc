@@ -1,0 +1,578 @@
+<title>Kaun Banega Crorepati</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600&family=Mukta:wght@400;600;800&display=swap">
+<style>
+:root{
+  --void:#04060f; --stage:#0a1030; --panel:#101a45; --panel-2:#16225a;
+  --rim:#3d58a6; --rim-soft:#25376f;
+  --chalk:#e9efff; --muted:#8f9dc9;
+  --gold:#f6c453; --gold-deep:#a8781f;
+  --amber:#ff9b28; --right:#39d98a; --wrong:#ff4d6a;
+  --hex:polygon(2.2% 0, 97.8% 0, 100% 50%, 97.8% 100%, 2.2% 100%, 0 50%);
+  --sans:'Mukta',ui-sans-serif,system-ui,sans-serif;
+  --cond:'Barlow Condensed','Arial Narrow',sans-serif;
+  --disp:'Anton','Arial Black',sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:var(--sans); font-size:16px; color:var(--chalk);
+  -webkit-text-size-adjust:100%;
+  background:
+    radial-gradient(120% 70% at 50% -10%, #1b2a6b 0%, rgba(10,16,48,0) 60%),
+    repeating-radial-gradient(circle at 50% 118%, rgba(99,132,255,.09) 0 1px, rgba(0,0,0,0) 1px 34px),
+    radial-gradient(90% 60% at 50% 120%, #16225a 0%, rgba(4,6,15,0) 65%),
+    var(--void);
+  min-height:100vh; min-height:100dvh;
+}
+@media (min-width:861px){body{background-attachment:fixed}}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* ---------- frame ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:18px 16px 40px}
+.top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.brand{font-family:var(--disp);font-size:clamp(20px,3.4vw,30px);letter-spacing:.02em;
+  background:linear-gradient(180deg,#fff5d6,var(--gold) 55%,var(--gold-deep));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.brand small{display:block;font-family:var(--cond);font-size:12px;letter-spacing:.34em;
+  color:var(--muted);-webkit-text-fill-color:var(--muted)}
+.top-actions{margin-left:auto;display:flex;gap:8px}
+.chip{font-family:var(--cond);font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);border:1px solid var(--rim-soft);border-radius:999px;padding:6px 14px;
+  transition:color .15s,border-color .15s}
+.chip:hover{color:var(--chalk);border-color:var(--rim)}
+.chip[aria-pressed="true"]{color:var(--gold);border-color:var(--gold-deep)}
+
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:22px;align-items:start}
+
+/* ---------- play column ---------- */
+.play{position:relative;min-height:520px;display:flex;flex-direction:column;gap:16px}
+.meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  font-family:var(--cond);letter-spacing:.16em;text-transform:uppercase;font-size:13px;color:var(--muted)}
+.meta .qno{color:var(--gold);letter-spacing:.2em}
+.meta .for{color:var(--chalk)}
+.meta .guar{margin-left:auto;color:var(--muted)}
+.meta .guar b{color:var(--right);font-weight:600;letter-spacing:.06em}
+
+.lifelines{display:flex;gap:10px;flex-wrap:wrap}
+.ll{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;position:relative;
+  border:1px solid var(--rim);background:radial-gradient(120% 120% at 50% 0,var(--panel-2),var(--stage));
+  font-family:var(--cond);font-size:12px;letter-spacing:.08em;line-height:1.05;text-align:center;
+  color:var(--chalk);transition:transform .15s,border-color .15s,box-shadow .15s}
+.ll span{padding:0 4px}
+.ll:hover:not(:disabled){transform:translateY(-2px);border-color:var(--gold);box-shadow:0 0 18px rgba(246,196,83,.28)}
+.ll:disabled{cursor:default;color:var(--rim-soft);border-color:var(--rim-soft);opacity:.65}
+.ll:disabled::after{content:"";position:absolute;inset:8px 2px;border-top:2px solid var(--wrong);
+  transform:rotate(-32deg);opacity:.8}
+.ll.pending:disabled::after{display:none}
+
+.host{font-size:15.5px;color:var(--muted);min-height:24px;font-style:italic}
+.qcard{position:relative;padding:2px;clip-path:var(--hex);
+  background:linear-gradient(90deg,var(--rim-soft),var(--rim) 50%,var(--rim-soft))}
+.qcard-in{clip-path:var(--hex);background:linear-gradient(180deg,#0d1741,#080d28);
+  padding:26px 44px;min-height:112px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.topic{font-family:var(--cond);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--rim)}
+.qtext{font-size:clamp(17px,2.3vw,21px);font-weight:600;line-height:1.4;text-wrap:balance;margin:0}
+
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{padding:2px;clip-path:var(--hex);background:linear-gradient(90deg,var(--rim-soft),var(--rim),var(--rim-soft));
+  transition:background .2s,transform .12s;text-align:left;width:100%}
+.opt-in{clip-path:var(--hex);background:linear-gradient(180deg,#0c1538,#080d24);
+  padding:15px 26px;display:flex;gap:14px;align-items:center;min-height:60px}
+.opt .k{font-family:var(--cond);font-size:19px;color:var(--gold);letter-spacing:.08em;flex:0 0 auto}
+.opt .v{font-size:16px;line-height:1.25}
+.opt:hover:not(:disabled):not(.locked){background:linear-gradient(90deg,var(--rim),#7e9bff,var(--rim));transform:translateY(-1px)}
+.opt.sel{background:linear-gradient(90deg,var(--gold-deep),var(--amber),var(--gold-deep));animation:pulse 1.1s ease-in-out infinite}
+.opt.sel .opt-in{background:linear-gradient(180deg,#3b2508,#231402)}
+.opt.sel .k{color:var(--amber)}
+.opt.ok{background:linear-gradient(90deg,#1c7a4e,var(--right),#1c7a4e);animation:none}
+.opt.ok .opt-in{background:linear-gradient(180deg,#0d3f28,#07281a)}
+.opt.ok .k{color:var(--right)}
+.opt.bad{background:linear-gradient(90deg,#8a1d33,var(--wrong),#8a1d33);animation:none}
+.opt.bad .opt-in{background:linear-gradient(180deg,#420f1c,#280812)}
+.opt.bad .k{color:var(--wrong)}
+.opt.gone{visibility:hidden}
+.opt:disabled{cursor:default}
+@keyframes pulse{50%{filter:brightness(1.45)}}
+
+.tray{display:flex;gap:12px;align-items:center;flex-wrap:wrap;min-height:52px}
+.btn{font-family:var(--cond);letter-spacing:.16em;text-transform:uppercase;font-size:15px;
+  padding:12px 26px;border-radius:2px;border:1px solid var(--gold-deep);
+  background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:#241703;font-weight:600;
+  transition:filter .15s,transform .12s}
+.btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.btn.ghost{background:none;color:var(--muted);border-color:var(--rim-soft);font-weight:500}
+.btn.ghost:hover{color:var(--chalk);border-color:var(--rim)}
+.btn .hi{font-family:var(--sans);font-weight:800;letter-spacing:0;text-transform:none;margin-right:8px}
+.nugget{border-left:2px solid var(--gold-deep);padding:2px 0 2px 16px;color:var(--muted);font-size:15px;max-width:62ch}
+.nugget b{color:var(--gold);font-weight:600}
+
+/* ---------- ladder ---------- */
+.ladder{border:1px solid var(--rim-soft);background:linear-gradient(180deg,rgba(16,26,69,.85),rgba(6,10,28,.85));
+  padding:10px;display:flex;flex-direction:column;gap:2px;position:sticky;top:18px}
+.ladder h2{font-family:var(--cond);font-size:12px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--muted);margin:2px 0 8px;text-align:center}
+.rung{display:grid;grid-template-columns:26px 1fr;align-items:center;gap:8px;padding:5px 10px;
+  font-variant-numeric:tabular-nums;color:var(--muted);font-size:14.5px;clip-path:var(--hex);transition:none}
+.rung .n{font-family:var(--cond);font-size:13px;letter-spacing:.06em;text-align:right;opacity:.75}
+.rung .m{font-weight:600}
+.rung.safe{color:#cfd8ff}
+.rung.safe .m::after{content:"PADAV";font-family:var(--cond);font-size:10px;letter-spacing:.18em;margin-left:8px;color:var(--rim);vertical-align:1px}
+.rung.won{color:var(--gold-deep)}
+.rung.cur{background:linear-gradient(90deg,var(--gold-deep),var(--gold) 55%,var(--gold-deep));color:#241703}
+.rung.cur .n{opacity:.85}
+.rung.cur .m::after{color:#5a3d06}
+
+/* ---------- overlays ---------- */
+.veil{position:fixed;inset:0;background:rgba(3,5,14,.8);backdrop-filter:blur(3px);
+  display:grid;place-items:center;padding:20px;z-index:20}
+.sheet{width:min(560px,100%);border:1px solid var(--rim);padding:28px;
+  background:linear-gradient(180deg,#101a45,#070c22);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.sheet h3{font-family:var(--disp);font-size:26px;font-weight:400;margin:0 0 4px;color:var(--gold)}
+.sheet .sub{font-family:var(--cond);letter-spacing:.2em;text-transform:uppercase;font-size:12px;color:var(--muted);margin-bottom:18px}
+.sheet p{line-height:1.55;margin:0 0 14px}
+.poll{display:flex;flex-direction:column;gap:10px;margin:6px 0 20px}
+.prow{display:grid;grid-template-columns:20px 1fr 46px;align-items:center;gap:10px;font-variant-numeric:tabular-nums}
+.prow .k{font-family:var(--cond);color:var(--gold);font-size:16px}
+.bar{height:14px;background:#0a1130;border:1px solid var(--rim-soft)}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--rim),#7e9bff);width:0;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.prow .p{text-align:right;font-size:14px;color:var(--muted)}
+.expert{display:flex;gap:14px;align-items:center;margin-bottom:16px}
+.avatar{width:52px;height:52px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+  font-family:var(--disp);font-size:20px;color:#241703;background:linear-gradient(180deg,var(--gold),var(--gold-deep))}
+.expert .nm{font-weight:800;font-size:17px}
+.expert .fd{font-family:var(--cond);letter-spacing:.14em;text-transform:uppercase;font-size:12px;color:var(--muted)}
+input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px solid var(--rim-soft);
+  color:var(--chalk);font:inherit;font-size:16px;margin-bottom:18px}
+.cheque{border:2px solid var(--gold-deep);padding:22px 24px;margin:18px 0 22px;
+  background:linear-gradient(135deg,rgba(246,196,83,.1),rgba(8,13,36,.2))}
+.cheque .lbl{font-family:var(--cond);letter-spacing:.28em;text-transform:uppercase;font-size:11px;color:var(--muted)}
+.cheque .amt{font-family:var(--disp);font-size:clamp(30px,7vw,46px);color:var(--gold);line-height:1.1;margin:6px 0 2px}
+.cheque .wrds{font-size:14px;color:var(--muted);font-style:italic}
+.recap{font-size:14.5px;color:var(--muted);line-height:1.6;margin-bottom:20px}
+.recap b{color:var(--chalk);font-weight:600}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:860px){
+  .wrap{padding:14px 12px 32px}
+  .stage{grid-template-columns:1fr;gap:16px}
+  .opts{grid-template-columns:1fr}
+  .qcard-in{padding:20px 24px;min-height:96px}
+  .opt-in{padding:14px 22px}
+  .ladder{position:static;order:2;display:grid;grid-auto-flow:column;
+    grid-template-rows:repeat(8,auto);grid-template-columns:1fr 1fr;gap:3px 10px;padding:12px 8px}
+  .ladder h2{display:none}
+  .rung{padding:6px 9px;font-size:14px;gap:6px}
+  .rung .n{font-size:11px}
+  .rung.safe .m::after{margin-left:6px;font-size:9px;letter-spacing:.14em}
+  .ll{width:56px;height:56px;font-size:11px}
+  .meta{font-size:12px;gap:8px}
+  .meta .guar{width:100%;margin-left:0}
+  .btn{padding:13px 22px}
+  .sheet{padding:22px 20px}
+}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div class="brand">Kaun Banega Crorepati<small>Hot Seat &nbsp;·&nbsp; 16 Questions &nbsp;·&nbsp; ₹7 Crore</small></div>
+    <div class="top-actions">
+      <button class="chip" id="sound" aria-pressed="true">Sound on</button>
+      <button class="chip" id="restart">New game</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="play">
+      <div class="meta">
+        <span class="qno" id="qno">Question 1</span>
+        <span class="for" id="qfor">for ₹1,000</span>
+        <span class="guar" id="guar">Guaranteed <b>₹0</b></span>
+      </div>
+      <div class="lifelines" id="lifelines"></div>
+      <div class="host" id="host"></div>
+      <div class="qcard"><div class="qcard-in">
+        <div class="topic" id="topic">—</div>
+        <p class="qtext" id="qtext">Press “New game” to begin.</p>
+      </div></div>
+      <div class="opts" id="opts"></div>
+      <div class="tray" id="tray"></div>
+    </div>
+
+    <aside class="ladder" id="ladder"><h2>Prize Ladder</h2></aside>
+  </div>
+</div>
+
+<div id="overlay"></div>
+
+<script>
+/* ============================ data ============================ */
+const LADDER=[
+ [1000,'One Thousand'],[2000,'Two Thousand'],[3000,'Three Thousand'],[5000,'Five Thousand'],
+ [10000,'Ten Thousand',1],[20000,'Twenty Thousand'],[40000,'Forty Thousand'],[80000,'Eighty Thousand'],
+ [160000,'One Lakh Sixty Thousand'],[320000,'Three Lakh Twenty Thousand',1],[640000,'Six Lakh Forty Thousand'],
+ [1250000,'Twelve Lakh Fifty Thousand'],[2500000,'Twenty Five Lakh'],[5000000,'Fifty Lakh'],
+ [10000000,'One Crore'],[70000000,'Seven Crore']
+].map(([v,w,s])=>({v,w,safe:!!s}));
+
+const BANK=[
+[ /* band 0 — aasaan */
+ {t:'Astronomy',q:'Which planet is known as the Red Planet?',o:['Venus','Mars','Jupiter','Mercury'],a:1,f:'Mars looks red because its dust is rich in iron oxide — plain rust.'},
+ {t:'Monuments',q:'The Taj Mahal stands in which city?',o:['Jaipur','Delhi','Agra','Lucknow'],a:2,f:'Shah Jahan built it for Mumtaz Mahal; the work took some twenty years.'},
+ {t:'Wildlife',q:'Which animal is the national animal of India?',o:['Asiatic Lion','Bengal Tiger','Elephant','Peacock'],a:1,f:'The tiger took the title from the lion in 1972, the year Project Tiger began.'},
+ {t:'Cricket',q:'How many players from one team are on the field in a cricket match?',o:['Nine','Ten','Eleven','Twelve'],a:2,f:'Eleven a side — which is exactly why the twelfth man only carries the drinks.'},
+ {t:'Literature',q:"Who wrote India's national anthem, 'Jana Gana Mana'?",o:['Bankim Chandra Chatterjee','Rabindranath Tagore','Sarojini Naidu','Muhammad Iqbal'],a:1,f:"Tagore wrote Bangladesh's national anthem too — 'Amar Shonar Bangla'."},
+ {t:'Geography',q:'Which is the largest ocean on Earth?',o:['Atlantic','Indian','Pacific','Arctic'],a:2,f:'The Pacific covers more of the planet than every landmass on it put together.'},
+ {t:'Science',q:'Which gas do human beings need to breathe in to stay alive?',o:['Nitrogen','Oxygen','Carbon dioxide','Hydrogen'],a:1,f:'Air is only about 21% oxygen — most of every breath you take is nitrogen.'},
+ {t:'Cities',q:'Which Indian city is known as the Pink City?',o:['Jodhpur','Jaipur','Udaipur','Bikaner'],a:1,f:'It was painted pink in 1876 to welcome the visiting Prince of Wales.'},
+ {t:'Geography',q:'Mumbai is the capital of which Indian state?',o:['Gujarat','Karnataka','Maharashtra','Goa'],a:2,f:"Nagpur is the state's winter capital, where the legislature sits once a year."},
+ {t:'Currency',q:'What is the currency of Japan?',o:['Won','Yuan','Yen','Ringgit'],a:2,f:"'Yen' simply means round object — the coin was named for its shape."},
+ {t:'Festivals',q:'Which festival is known as the festival of lights?',o:['Holi','Diwali','Onam','Baisakhi'],a:1,f:"The word comes from 'deepavali' — a row of earthen lamps."},
+ {t:'Anatomy',q:'Which organ of the human body pumps blood?',o:['Liver','Lungs','Heart','Kidney'],a:2,f:'It beats about a lakh times a day, moving some 7,000 litres of blood.'},
+ {t:'Geography',q:'Which is the highest mountain in the world?',o:['K2','Kanchenjunga','Mount Everest','Nanda Devi'],a:2,f:'It gains a few millimetres every year as India keeps pushing into Asia.'}
+],
+[ /* band 1 — thoda sochiye */
+ {t:'Geography',q:'Which Indian state has the longest coastline?',o:['Tamil Nadu','Gujarat','Andhra Pradesh','Maharashtra'],a:1,f:"Gujarat's coast runs about 1,600 km — nearly a fifth of India's shoreline."},
+ {t:'History',q:"Who was India's first woman Prime Minister?",o:['Sarojini Naidu','Indira Gandhi','Pratibha Patil','Vijaya Lakshmi Pandit'],a:1,f:'She took office in 1966; Pratibha Patil became the first woman President in 2007.'},
+ {t:'History',q:'Which Mughal emperor built the Red Fort in Delhi?',o:['Akbar','Babur','Shah Jahan','Aurangzeb'],a:2,f:'He shifted his capital from Agra to his new city, Shahjahanabad, in 1648.'},
+ {t:'Monuments',q:'The Konark Sun Temple is in which state?',o:['Odisha','West Bengal','Bihar','Jharkhand'],a:0,f:'Its 24 carved stone wheels double as sundials that still keep time.'},
+ {t:'Chemistry',q:"Which element has the chemical symbol 'Au'?",o:['Silver','Gold','Aluminium','Copper'],a:1,f:"From the Latin 'aurum' — the glow of sunrise."},
+ {t:'Cricket',q:'In which year did India win its first Cricket World Cup?',o:['1975','1979','1983','1987'],a:2,f:"Kapil Dev's side defended just 183 runs against the West Indies at Lord's."},
+ {t:'Dance',q:'Which classical dance form originated in Kerala?',o:['Kathak','Kathakali','Odissi','Kuchipudi'],a:1,f:"A performer's green 'pacha' make-up can take three hours to put on."},
+ {t:'Geography',q:'Which strait separates India from Sri Lanka?',o:['Palk Strait','Bering Strait','Strait of Malacca','Sunda Strait'],a:0,f:'At its narrowest the gap is barely 30 kilometres of shallow water.'},
+ {t:'Literature',q:'Who was the first Indian to win a Nobel Prize?',o:['C.V. Raman','Rabindranath Tagore','Mother Teresa','Amartya Sen'],a:1,f:'Literature, 1913 — for Gitanjali, which he had translated into English himself.'},
+ {t:'History',q:'The Jallianwala Bagh massacre took place in which year?',o:['1911','1919','1927','1930'],a:1,f:'Tagore returned his knighthood in protest the following year.'},
+ {t:'Awards',q:'What is the highest civilian award in India?',o:['Padma Shri','Padma Bhushan','Bharat Ratna','Param Vir Chakra'],a:2,f:'The Param Vir Chakra is the highest military honour — not a civilian one.'},
+ {t:'World',q:'What is the capital of Australia?',o:['Sydney','Melbourne','Canberra','Perth'],a:2,f:'Chosen in 1908 as a compromise, sitting roughly midway between Sydney and Melbourne.'},
+ {t:'Biology',q:'Which acid is found in the human stomach?',o:['Sulphuric acid','Hydrochloric acid','Nitric acid','Acetic acid'],a:1,f:'Strong enough to dissolve metal — so the stomach relines itself every few days.'},
+ {t:'History',q:'Who founded the Maurya Empire?',o:['Ashoka','Chandragupta Maurya','Bindusara','Samudragupta'],a:1,f:'He was guided by Chanakya, the author of the Arthashastra.'},
+ {t:'Cities',q:"Which city is called the 'Silicon Valley of India'?",o:['Hyderabad','Pune','Bengaluru','Chennai'],a:2,f:"India's first electronics park, Electronics City, opened on its outskirts in 1978."}
+],
+[ /* band 2 — mushkil */
+ {t:'History',q:'Who was the first Governor-General of independent India?',o:['C. Rajagopalachari','Lord Mountbatten','Rajendra Prasad','Lord Wavell'],a:1,f:'Rajagopalachari followed him in 1948 — the first and last Indian to hold the post.'},
+ {t:'History',q:'The Battle of Plassey was fought in which year?',o:['1757','1764','1739','1772'],a:0,f:"Mir Jafar's defection settled it before the fighting had properly begun."},
+ {t:'Constitution',q:'Which Article of the Constitution guarantees the right to constitutional remedies?',o:['Article 14','Article 19','Article 21','Article 32'],a:3,f:"Ambedkar called Article 32 'the very soul of the Constitution'."},
+ {t:'Cinema',q:"Who composed the music for Satyajit Ray's 'Pather Panchali'?",o:['Ravi Shankar','Ali Akbar Khan','Vilayat Khan','Bismillah Khan'],a:0,f:'He improvised most of the score in a single overnight session.'},
+ {t:'Physics',q:'What is the SI unit of magnetic flux density?',o:['Weber','Tesla','Henry','Gauss'],a:1,f:'One tesla equals 10,000 gauss — a hospital MRI runs at about 1.5.'},
+ {t:'Astronomy',q:'Titan is the largest moon of which planet?',o:['Jupiter','Saturn','Neptune','Uranus'],a:1,f:'It has rivers and lakes — of liquid methane, at about minus 180°C.'},
+ {t:'Economy',q:'In which year was the Reserve Bank of India established?',o:['1921','1935','1947','1949'],a:1,f:'It was set up on the recommendations of the Hilton Young Commission.'},
+ {t:'Politics',q:'Which was the first Indian state to be formed on a linguistic basis?',o:['Andhra Pradesh','Kerala','Karnataka','Tamil Nadu'],a:0,f:"It followed Potti Sriramulu's 58-day fast unto death in 1952."},
+ {t:'Reform',q:'Who founded the Brahmo Samaj?',o:['Dayanand Saraswati','Raja Ram Mohan Roy','Ishwar Chandra Vidyasagar','Keshab Chandra Sen'],a:1,f:'Founded in 1828; his campaign against sati led to its ban a year later.'},
+ {t:'Chemistry',q:'Which metal is used as the filament in an incandescent bulb?',o:['Copper','Tungsten','Nichrome','Zinc'],a:1,f:'It has the highest melting point of any metal — 3,422°C.'},
+ {t:'Sanskrit',q:"Who wrote the play 'Abhijnanashakuntalam'?",o:['Kalidasa','Bhasa','Sudraka','Banabhatta'],a:0,f:"Goethe's admiration for it helped set off Europe's fascination with Sanskrit."},
+ {t:'Biology',q:'The study of fungi is called what?',o:['Mycology','Virology','Entomology','Etymology'],a:0,f:'The largest known organism on Earth is a honey fungus spread across an Oregon forest.'},
+ {t:'Geography',q:'The Tropic of Cancer passes through how many Indian states?',o:['Five','Eight','Eleven','Three'],a:1,f:'Gujarat, Rajasthan, Madhya Pradesh, Chhattisgarh, Jharkhand, West Bengal, Tripura and Mizoram.'},
+ {t:'Oceans',q:'Which is the deepest oceanic trench in the world?',o:['Java Trench','Mariana Trench','Puerto Rico Trench','Tonga Trench'],a:1,f:'Nearly 11 km deep — drop Everest in and its peak would still be a kilometre under water.'},
+ {t:'History',q:'Who was the first woman to preside over the Indian National Congress?',o:['Sarojini Naidu','Annie Besant','Nellie Sengupta','Vijaya Lakshmi Pandit'],a:1,f:'She chaired the 1917 session; Sarojini Naidu, in 1925, was the first Indian woman to do so.'}
+],
+[ /* band 3 — sirf mahir jaante hain */
+ {t:'Elections',q:"Who was India's first Chief Election Commissioner?",o:['Sukumar Sen','T.N. Seshan','K.V.K. Sundaram','S.P. Sen Verma'],a:0,f:"A mathematician by training, he ran the world's largest ever election in 1951-52."},
+ {t:'History',q:"The 'Doctrine of Lapse' was pursued by which Governor-General?",o:['Lord Dalhousie','Lord Canning','Lord Cornwallis','Lord Bentinck'],a:0,f:'Jhansi was annexed under it in 1854 — a grievance that fed straight into 1857.'},
+ {t:'Literature',q:"Who wrote 'Rajatarangini', the chronicle of the kings of Kashmir?",o:['Kalhana','Bilhana','Ksemendra','Somadeva'],a:0,f:"Written around 1150 CE, it is often called India's first true work of history."},
+ {t:'Currency',q:'What is the currency of Bhutan?',o:['Taka','Ngultrum','Kyat','Rufiyaa'],a:1,f:'It is pegged one-to-one with the Indian rupee, which also circulates freely there.'},
+ {t:'Geography',q:'Which is the largest freshwater lake in India?',o:['Chilika','Wular','Loktak','Pulicat'],a:1,f:'Chilika and Pulicat are larger — but both are brackish lagoons, not freshwater.'},
+ {t:'Law',q:"Which Supreme Court case established the 'basic structure' doctrine?",o:['Golaknath','Kesavananda Bharati','Minerva Mills','Maneka Gandhi'],a:1,f:'Decided 7-6 in 1973 — one of the narrowest and most consequential margins in Indian law.'},
+ {t:'History',q:'Who was Viceroy of India at the time of the Jallianwala Bagh massacre?',o:['Lord Curzon','Lord Chelmsford','Lord Reading','Lord Irwin'],a:1,f:'The Montagu-Chelmsford reforms of 1919 carry his name as well.'},
+ {t:'Anatomy',q:'What is the smallest bone in the human body?',o:['Stapes','Incus','Malleus','Hyoid'],a:0,f:'Barely 3 mm long, in the middle ear — its two neighbours are both larger.'},
+ {t:'History',q:'Who founded the Sunga dynasty?',o:['Pushyamitra Sunga','Agnimitra','Devabhuti','Vasumitra'],a:0,f:'A general who overthrew the last Mauryan ruler around 185 BCE.'},
+ {t:'Law',q:'Who was the first Indian judge at the International Court of Justice?',o:['B.N. Rau','Nagendra Singh','R.S. Pathak','Dalveer Bhandari'],a:0,f:"He was also the constitutional adviser who prepared the Constitution's very first draft."},
+ {t:'Geography',q:'Which range separates the Kashmir Valley from the plains of Punjab?',o:['Zanskar','Pir Panjal','Karakoram','Dhauladhar'],a:1,f:'The Banihal Pass through it was the valley’s only road link to the plains for decades.'},
+ {t:'Space',q:'Who was the first woman of Indian origin to travel into space?',o:['Sunita Williams','Kalpana Chawla','Ritu Karidhal','Tessy Thomas'],a:1,f:'She flew aboard the shuttle Columbia in 1997, and again in 2003.'}
+]];
+
+const EXPERTS=[
+ {n:'Dr. Anjali Rao',f:'Astrophysicist, IUCAA Pune',d:['Astronomy','Space','Physics','Science']},
+ {n:'Prof. Iqbal Qureshi',f:'Historian, Aligarh Muslim University',d:['History','Monuments','Elections','Politics','Reform']},
+ {n:'Justice (Retd.) Meera Sathe',f:'Constitutional lawyer',d:['Constitution','Law','Awards']},
+ {n:'Dr. Sanjay Iyer',f:'Biologist, IISc Bengaluru',d:['Biology','Anatomy','Chemistry','Oceans']},
+ {n:'Rukmini Devi Prasad',f:'Arts critic and Sangeet Natak awardee',d:['Dance','Cinema','Literature','Sanskrit','Festivals']},
+ {n:'Harish Gokhale',f:'Six-time national quiz champion',d:['Geography','Cricket','Currency','World','Cities','Economy','Wildlife']}
+];
+
+const PATTER=[
+ 'Aaram se soch kar jawaab dijiye. Koi jaldi nahi hai.',
+ 'Yeh sawaal aapke liye bilkul aasaan hona chahiye.',
+ 'Devi-yon aur sajjano, dhyaan se suniye.',
+ 'Computer ji, agla sawaal screen par laaiye.',
+ 'Yahan se aage har jawaab bhaari padta hai.',
+ 'Sochiye. Samay leejiye. Jaldi kuch nahi hai.',
+ 'Yeh sawaal maine bhi do baar padha tha.',
+ 'Aapke chehre par confidence dikh raha hai.'
+];
+
+/* ============================ helpers ============================ */
+const $=s=>document.querySelector(s);
+const rupee=n=>{const s=String(n);if(s.length<=3)return '₹'+s;
+  const last3=s.slice(-3);let rest=s.slice(0,-3);
+  rest=rest.replace(/\B(?=(\d{2})+(?!\d))/g,',');return '₹'+rest+','+last3;};
+const rand=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const bandFor=i=>i<5?0:i<10?1:i<14?2:3;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ---- sound: synthesized, no files ---- */
+let AC=null,SOUND=true;
+function tone(freq,dur,type='sine',gain=.08,slide){
+  if(!SOUND)return; try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
+  if(AC.state==='suspended')AC.resume();
+  const o=AC.createOscillator(),g=AC.createGain();
+  o.type=type;o.frequency.setValueAtTime(freq,AC.currentTime);
+  if(slide)o.frequency.exponentialRampToValueAtTime(slide,AC.currentTime+dur);
+  g.gain.setValueAtTime(gain,AC.currentTime);
+  g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+dur);
+  o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+dur);
+}
+const sfx={
+  pick:()=>tone(660,.08,'triangle',.05),
+  lock:()=>{tone(180,.5,'sawtooth',.07,80);setTimeout(()=>tone(120,.7,'sine',.06,60),90);},
+  tick:()=>tone(1200,.04,'square',.025),
+  right:()=>{[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.35,'triangle',.07),i*110));},
+  wrong:()=>{tone(140,.9,'sawtooth',.08,60);setTimeout(()=>tone(90,1.1,'square',.05,45),120);},
+  win:()=>{[523,659,784,1047,1319,1568].forEach((f,i)=>setTimeout(()=>tone(f,.5,'triangle',.08),i*130));}
+};
+
+/* ============================ state ============================ */
+let S=null;
+function newGame(name){
+  const used=BANK.map(()=>new Set());
+  S={name:name||'Aap',i:0,banked:0,over:false,locked:false,sel:null,used,
+     q:null,removed:[],ll:{fifty:true,poll:true,expert:true,flip:true},pending:null};
+  draw();render();
+}
+function draw(){
+  const b=bandFor(S.i),pool=BANK[b],u=S.used[b];
+  let idx=[...pool.keys()].filter(k=>!u.has(k));
+  if(!idx.length){u.clear();idx=[...pool.keys()];}
+  const k=rand(idx);u.add(k);
+  const src=pool[k];
+  const order=shuffle([0,1,2,3]);
+  S.q={t:src.t,q:src.q,f:src.f,o:order.map(j=>src.o[j]),a:order.indexOf(src.a)};
+  S.sel=null;S.locked=false;S.removed=[];S.patter=rand(PATTER);
+}
+const guaranteed=()=>{let g=0;for(let k=0;k<S.i;k++)if(LADDER[k].safe)g=LADDER[k].v;return g;};
+
+/* ============================ render ============================ */
+function render(){
+  const L=LADDER[S.i];
+  $('#qno').textContent='Question '+(S.i+1);
+  $('#qfor').textContent='for '+rupee(L.v);
+  $('#guar').innerHTML='Guaranteed <b>'+rupee(guaranteed())+'</b>';
+  $('#topic').textContent=S.q.t;
+  $('#qtext').textContent=S.q.q;
+  $('#host').textContent=S.locked?'':S.patter;
+  renderLifelines();renderOpts();renderLadder();renderTray();
+}
+function renderLifelines(){
+  const defs=[['fifty','50 : 50'],['poll','Audience Poll'],['expert','Ask the Expert'],['flip','Flip the Question']];
+  $('#lifelines').innerHTML=defs.map(([k,label])=>{
+    const spent=!S.ll[k];
+    const early=k==='flip'&&S.i<5;
+    const off=spent||early||S.locked;
+    return `<button class="ll${!spent&&off?' pending':''}" data-ll="${k}" ${off?'disabled':''}
+      title="${early?'Unlocks from Question 6':label}"><span>${label}</span></button>`;
+  }).join('');
+}
+function renderOpts(){
+  $('#opts').innerHTML=S.q.o.map((txt,i)=>{
+    let cls='opt';
+    if(S.removed.includes(i))cls+=' gone';
+    if(S.sel===i&&!S.reveal)cls+=' sel';
+    if(S.reveal){ if(i===S.q.a&&S.showAns)cls+=' ok';
+      else if(i===S.sel&&i!==S.q.a)cls+=' bad'; }
+    return `<button class="${cls}" data-opt="${i}" ${S.locked?'disabled':''}>
+      <span class="opt-in"><span class="k">${'ABCD'[i]}</span><span class="v">${txt}</span></span></button>`;
+  }).join('');
+}
+function renderLadder(){
+  const rows=LADDER.map((r,i)=>{
+    let c='rung';if(r.safe)c+=' safe';
+    if(i<S.i)c+=' won';if(i===S.i&&!S.over)c+=' cur';
+    return `<div class="${c}"><span class="n">${i+1}</span><span class="m">${rupee(r.v)}</span></div>`;
+  }).reverse().join('');
+  $('#ladder').innerHTML='<h2>Prize Ladder</h2>'+rows;
+}
+function renderTray(){
+  const t=$('#tray');
+  if(S.reveal){t.innerHTML='';return;}
+  let h='';
+  if(S.sel!==null&&!S.locked)
+    h+=`<button class="btn" id="lockbtn"><span class="hi">लॉक किया जाए?</span>Lock it in</button>`;
+  if(S.i>0&&!S.locked)
+    h+=`<button class="btn ghost" id="quitbtn">Quit with ${rupee(LADDER[S.i-1].v)}</button>`;
+  t.innerHTML=h;
+}
+
+/* ============================ play ============================ */
+document.addEventListener('click',e=>{
+  const o=e.target.closest('[data-opt]');
+  if(o&&S&&!S.locked){S.sel=+o.dataset.opt;sfx.pick();renderOpts();renderTray();return;}
+  const l=e.target.closest('[data-ll]');
+  if(l&&S&&!S.locked){useLifeline(l.dataset.ll);return;}
+  if(e.target.closest('#lockbtn'))lock();
+  if(e.target.closest('#quitbtn'))quit();
+});
+
+async function lock(){
+  S.locked=true;$('#host').textContent='';renderOpts();renderLifelines();renderTray();
+  sfx.lock();
+  const suspense=800+S.i*180;
+  const t=setInterval(sfx.tick,320);
+  await sleep(suspense);clearInterval(t);
+  const won=S.sel===S.q.a;
+  S.reveal=true;S.showAns=won;renderOpts();
+  if(won){sfx.right();}
+  else{sfx.wrong();await sleep(900);S.showAns=true;renderOpts();}
+  await sleep(600);
+  showNugget(won);
+}
+function showNugget(won){
+  const L=LADDER[S.i];
+  const head=won
+    ? (S.i===15?'Aap saat crore jeet chuke hain!':`Bilkul sahi jawaab. Aap jeet chuke hain ${rupee(L.v)}.`)
+    : `Yeh sahi jawaab nahi tha. Sahi jawaab tha ${'ABCD'[S.q.a]} — ${S.q.o[S.q.a]}.`;
+  $('#host').textContent=head;
+  $('#tray').innerHTML=
+    `<div class="nugget"><b>Waise aapko bata dein —</b> ${S.q.f}</div>`+
+    (won&&S.i<15?`<button class="btn" id="nextbtn">Next question</button>`:'');
+  if(won&&S.i<15){
+    $('#nextbtn').onclick=()=>{S.i++;S.reveal=false;S.showAns=false;draw();render();};
+  }else{
+    setTimeout(()=>endGame(won?'won':'lost'),1400);
+  }
+}
+function quit(){ endGame('quit'); }
+
+/* ---------- lifelines ---------- */
+function useLifeline(k){
+  if(!S.ll[k])return;
+  if(k==='fifty'){
+    S.ll.fifty=false;
+    const wrong=[0,1,2,3].filter(i=>i!==S.q.a);
+    S.removed=shuffle(wrong).slice(0,2);
+    if(S.removed.includes(S.sel))S.sel=null;
+    renderOpts();renderLifelines();renderTray();
+    $('#host').textContent='Do galat options hata diye gaye hain.';
+    return;
+  }
+  if(k==='flip'){
+    S.ll.flip=false;
+    const spent=Object.entries(S.ll).filter(([,v])=>!v).length;
+    draw();render();
+    $('#host').textContent='Naya sawaal, usi raqam ke liye.'+(spent>1?' Lifelines jo kharch ho chuki hain, wo wapas nahi aatin.':'');
+    return;
+  }
+  if(k==='poll'){S.ll.poll=false;renderLifelines();showPoll();return;}
+  if(k==='expert'){S.ll.expert=false;renderLifelines();showExpert();return;}
+}
+function pollNumbers(){
+  const b=bandFor(S.i),a=S.q.a;
+  const live=[0,1,2,3].filter(i=>!S.removed.includes(i));
+  const pct=[0,0,0,0];
+  const range=[[75,95],[55,75],[42,62],[30,46]][b];
+  let lead=a;
+  if(b===3&&Math.random()<.34)lead=rand(live.filter(i=>i!==a));
+  else if(b===2&&Math.random()<.15)lead=rand(live.filter(i=>i!==a));
+  let top=Math.round(range[0]+Math.random()*(range[1]-range[0]));
+  if(live.length===2)top=Math.min(92,top+18);
+  pct[lead]=top;
+  let left=100-top;
+  const rest=shuffle(live.filter(i=>i!==lead));
+  rest.forEach((i,n)=>{
+    const share=n===rest.length-1?left:Math.max(1,Math.round(left*(0.65-n*0.15)*(0.7+Math.random()*0.6)));
+    pct[i]=Math.min(share,left);left-=pct[i];
+  });
+  if(left>0)pct[rest[rest.length-1]]+=left;
+  return pct;
+}
+function showPoll(){
+  const pct=pollNumbers();
+  const rows=[0,1,2,3].map(i=>S.removed.includes(i)?'':
+    `<div class="prow"><span class="k">${'ABCD'[i]}</span>
+      <span class="bar"><i data-w="${pct[i]}"></i></span>
+      <span class="p">${pct[i]}%</span></div>`).join('');
+  overlay(`<h3>Audience Poll</h3><div class="sub">Studio audience &nbsp;·&nbsp; ${S.q.t}</div>
+    <div class="poll">${rows}</div>
+    <div class="row"><button class="btn" data-close>Back to the question</button></div>`);
+  requestAnimationFrame(()=>document.querySelectorAll('.bar i').forEach(el=>el.style.width=el.dataset.w+'%'));
+}
+function showExpert(){
+  const b=bandFor(S.i);
+  const ex=EXPERTS.find(e=>e.d.includes(S.q.t))||rand(EXPERTS);
+  const acc=[1,1,.85,.62][b];
+  const live=[0,1,2,3].filter(i=>!S.removed.includes(i));
+  const right=Math.random()<acc;
+  const pick=right?S.q.a:(rand(live.filter(i=>i!==S.q.a))??S.q.a);
+  const opens=['This one I know well.','Let me think aloud for a moment.','Interesting — this comes up often.','I have taught this, so let me be careful.'];
+  const sure=[
+    'I have no hesitation here. The answer is <b>'+'ABCD'[pick]+' — '+S.q.o[pick]+'</b>.',
+    "I'd stake my reputation on it: <b>"+'ABCD'[pick]+' — '+S.q.o[pick]+'</b>.'
+  ];
+  const hedge=[
+    "I'm fairly confident, though not certain — I would go with <b>"+'ABCD'[pick]+' — '+S.q.o[pick]+'</b>.',
+    'Two of these are plausible, but on balance I lean towards <b>'+'ABCD'[pick]+' — '+S.q.o[pick]+'</b>.'
+  ];
+  const unsure=[
+    "Honestly, at this level I am reasoning rather than recalling. My instinct says <b>"+'ABCD'[pick]+' — '+S.q.o[pick]+'</b>, but please weigh it lightly.',
+    "I don't want to mislead you — I am not sure. If forced, <b>"+'ABCD'[pick]+' — '+S.q.o[pick]+'</b>.'
+  ];
+  const body=b<2?rand(sure):b===2?rand(hedge):rand(unsure);
+  const conf=b<2?'High confidence':b===2?'Fairly confident':'Low confidence';
+  overlay(`<h3>Ask the Expert</h3><div class="sub">Video call &nbsp;·&nbsp; 30 seconds</div>
+    <div class="expert"><div class="avatar">${ex.n.split(' ').slice(-1)[0][0]}</div>
+      <div><div class="nm">${ex.n}</div><div class="fd">${ex.f}</div></div></div>
+    <p>${rand(opens)} ${body}</p>
+    <div class="sub" style="margin-bottom:18px">${conf}</div>
+    <div class="row"><button class="btn" data-close>Back to the question</button></div>`);
+}
+
+/* ---------- overlays ---------- */
+function overlay(html,dismissible=true){
+  $('#overlay').innerHTML=`<div class="veil"><div class="sheet">${html}</div></div>`;
+  if(dismissible)$('#overlay').querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{$('#overlay').innerHTML='';});
+}
+function startScreen(){
+  overlay(`<h3>Hot Seat</h3><div class="sub">Kaun Banega Crorepati</div>
+    <p>Sixteen questions stand between you and ₹7 crore. Four lifelines stand beside you.
+    Two padavs — ₹10,000 and ₹3,20,000 — stand under you, so a wrong answer never sends you home empty-handed.</p>
+    <input type="text" id="nm" placeholder="Your name" maxlength="24" autocomplete="off">
+    <div class="row"><button class="btn" id="go"><span class="hi">Baithiye</span>Take the hot seat</button></div>`,false);
+  const inp=$('#nm');inp.focus();
+  const go=()=>{$('#overlay').innerHTML='';newGame(inp.value.trim());};
+  $('#go').onclick=go;
+  inp.onkeydown=e=>{if(e.key==='Enter')go();};
+}
+function endGame(how){
+  S.over=true;renderLadder();
+  const amount=how==='lost'?guaranteed():how==='quit'?(S.i>0?LADDER[S.i-1].v:0):LADDER[15].v;
+  const words=amount===0?'Zero':LADDER.find(r=>r.v===amount).w;
+  if(how==='won')sfx.win();
+  const head=how==='won'?'Saat crore!':how==='quit'?'Aapne game quit kiya':'Khel yahin khatam';
+  const line=how==='won'
+    ? `${S.name}, aaj ki raat aapke naam. Poori sixteen ki sixteen.`
+    : how==='quit'
+      ? `Samajhdaari ka faisla. ${S.i} sawaal, aur ye raqam aapke naam.`
+      : `Aap ${S.i+1}ve sawaal par ruke. Lekin padav paar kar chuke the, isliye —`;
+  overlay(`<h3>${head}</h3><div class="sub">${S.name}</div>
+    <p>${line}</p>
+    <div class="cheque"><div class="lbl">Winnings</div>
+      <div class="amt">${rupee(amount)}</div>
+      <div class="wrds">${words} Rupees Only</div></div>
+    <div class="recap">Questions faced: <b>${S.i+(how==='lost'?1:0)}</b> ·
+      Lifelines used: <b>${4-Object.values(S.ll).filter(Boolean).length} of 4</b> ·
+      Reached: <b>${rupee(LADDER[Math.min(S.i,15)].v)} level</b></div>
+    <div class="row"><button class="btn" id="again">Play again</button></div>`,false);
+  $('#again').onclick=()=>{$('#overlay').innerHTML='';startScreen();};
+}
+
+/* ---------- chrome ---------- */
+$('#sound').onclick=e=>{SOUND=!SOUND;e.target.setAttribute('aria-pressed',SOUND);
+  e.target.textContent=SOUND?'Sound on':'Sound off';if(SOUND)sfx.pick();};
+$('#restart').onclick=()=>startScreen();
+
+/* first paint: a live board behind the start sheet */
+S={name:'Aap',i:0,banked:0,over:false,locked:false,sel:null,used:BANK.map(()=>new Set()),
+   q:null,removed:[],ll:{fifty:true,poll:true,expert:true,flip:true}};
+draw();render();
+startScreen();
+</script>
