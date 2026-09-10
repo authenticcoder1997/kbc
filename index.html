@@ -494,24 +494,66 @@ const sfx={
   win(){[523.25,659.25,783.99,1046.5,1318.5,1568].forEach((f,i)=>note(f,.6,{type:'triangle',gain:.08,at:i*.14}));
     [0,.14,.28,.42,.56,.7].forEach(at=>setTimeout(()=>hit(.2,.05,1200),at*1000));}
 };
-/* ---- optional sound pack: any file present in sounds/ replaces the synth cue ---- */
-const PACK={theme:'theme',lifeline:'lifeline',lock:'lock',right:'correct',
-            wrong:'wrong',padav:'padav',win:'win',quit:'quit',bed:'suspense'};
-const AUD={};
-(function loadPack(){
-  Object.keys(PACK).forEach(function(k){
-    const el=new Audio('sounds/'+PACK[k]+'.mp3');
-    el.preload='auto'; el.volume=.75;
-    if(k==='bed'){el.loop=true;el.volume=.5;}
-    el.addEventListener('canplaythrough',function(){AUD[k]=el;},{once:true});
-    el.addEventListener('error',function(){},{once:true});
-  });
-})();
+/* ---- sound pack: files in sounds/ replace the synth cues, one by one ---- */
+/* Anything missing (as on the published site, where the folder is empty) falls
+   straight back to the synthesized cue, so the game works either way.          */
+const PACK={
+  theme:'kbc-intro_CnIfZV8.mp3',
+  theme2:'kbc-intro_SD3sMiW.mp3',
+  question:'kbc-question-being-asked.mp3',
+  bed:'kbc-suspense.mp3',
+  tick:'tik-tik.mp3',
+  lock:'kbc-answer-locked-in.mp3',
+  right:'kbc-right-answer-new.mp3',
+  wrong:'kbc-wrong-answer.mp3',
+  win:'7 crore KBC .mp3',
+  padav:'itne-paise.mp3',
+  quit:'nahi-maanenge.mp3',
+  fifty:'KBC question.mp3',
+  poll:'are-bhai.mp3',
+  expert:'phone-rakho.mp3',
+  flip:'kbc-flip-the-question.mp3',
+  lifeline:'kbc-question-being-asked.mp3'
+};
+/* played now and then between questions, for flavour */
+const BANTER=['angry-amitabh.mp3','main-amitabh-bol-raha-hu.mp3','puch-raha-hai-ke-bta-raha-hai.mp3',
+  'gst-bst-cst.mp3','karachi-ka-number.mp3','purani-wali.mp3','nek-khyal.mp3','madhushala.mp3',
+  'kyun-bane-crorepati.mp3','kbc-right-answer_AYv3mAo.mp3'];
+const AUD={},VOICE={};
+function loadClip(file,store,key){
+  const el=new Audio('sounds/'+encodeURIComponent(file));
+  el.preload='auto'; el.volume=.8;
+  if(key==='bed'){el.loop=true;el.volume=.45;}
+  el.addEventListener('canplaythrough',function(){store[key]=el;},{once:true});
+  el.addEventListener('error',function(){},{once:true});
+}
+Object.keys(PACK).forEach(function(k){loadClip(PACK[k],AUD,k);});
+BANTER.forEach(function(f,i){loadClip(f,VOICE,'b'+i);});
+let PLAYING=null;
+function stopVoice(){ if(PLAYING){try{PLAYING.pause();PLAYING.currentTime=0;}catch(e){}PLAYING=null;} }
 function cue(name){
   if(!SOUND)return;
+  if(name==='theme'&&AUD.theme2&&Math.random()<.5)name='theme2';
   const a=AUD[name];
-  if(a){ try{a.currentTime=0;}catch(e){} a.play().catch(function(){ if(sfx[name])sfx[name](); }); return; }
+  if(a){
+    if(name!=='tick')stopVoice();
+    try{a.currentTime=0;}catch(e){}
+    const pr=a.play();
+    if(pr&&pr.catch)pr.catch(function(){ if(sfx[name])sfx[name](); });
+    if(name!=='tick')PLAYING=a;
+    return;
+  }
   if(sfx[name])sfx[name]();
+}
+function banter(){                                  /* one clip in four, between questions */
+  if(!SOUND)return;
+  const keys=Object.keys(VOICE);
+  if(!keys.length||Math.random()>.25)return;
+  const a=VOICE[rand(keys)];
+  stopVoice();
+  try{a.currentTime=0;}catch(e){}
+  const pr=a.play(); if(pr&&pr.catch)pr.catch(function(){});
+  PLAYING=a;
 }
 /* tension bed: a looped track if you supplied one, else drone plus a pulse that quickens */
 function startBed(level){
@@ -590,7 +632,7 @@ function render(){
   $('#guar').innerHTML='Guaranteed <b>'+rupee(guaranteed())+'</b>';
   $('#topic').textContent=S.q.t;
   $('#qtext').textContent=S.q.q;
-  if(!S.locked&&!S.reveal)say(S.patter);
+  if(!S.locked&&!S.reveal){say(S.patter);if(S.i>0)cue('question');}
   renderLifelines();renderOpts();renderLadder();renderTray();updateBed();
 }
 function renderLifelines(){
@@ -666,6 +708,7 @@ function showNugget(won){
     head = S.i===15 ? fill(rand(HOST.jackpot),{name:S.name})
                     : fill(rand(HOST.right[b]),{amt:rupee(L.v)});
     if(L.safe){head+=' '+fill(HOST.padav,{amt:rupee(L.v)});setTimeout(function(){cue('padav');},700);}
+    else setTimeout(banter,1400);
   }else{
     head = fill(rand(HOST.wrong),{L:'ABCD'[S.q.a],opt:S.q.o[S.q.a]});
   }
@@ -689,19 +732,19 @@ function useLifeline(k){
     const wrong=[0,1,2,3].filter(i=>i!==S.q.a);
     S.removed=shuffle(wrong).slice(0,2);
     if(S.removed.includes(S.sel))S.sel=null;
-    cue('lifeline');renderOpts();renderLifelines();renderTray();
+    cue('fifty');renderOpts();renderLifelines();renderTray();
     say(HOST.fifty);
     return;
   }
   if(k==='flip'){
     S.ll.flip=false;
     const spent=Object.entries(S.ll).filter(([,v])=>!v).length;
-    cue('lifeline');draw();render();
+    cue('flip');draw();render();
     say(HOST.flip+(spent>1?' Jo lifelines kharch ho chuki hain, wo wapas nahi aatin.':''));
     return;
   }
-  if(k==='poll'){S.ll.poll=false;cue('lifeline');renderLifelines();say(HOST.poll);showPoll();return;}
-  if(k==='expert'){S.ll.expert=false;cue('lifeline');renderLifelines();say(HOST.expert);showExpert();return;}
+  if(k==='poll'){S.ll.poll=false;cue('poll');renderLifelines();say(HOST.poll);showPoll();return;}
+  if(k==='expert'){S.ll.expert=false;cue('expert');renderLifelines();say(HOST.expert);showExpert();return;}
 }
 function pollNumbers(){
   const b=bandFor(S.i),a=S.q.a;
@@ -781,7 +824,7 @@ function startScreen(){
   inp.onkeydown=e=>{if(e.key==='Enter')go();};
 }
 function endGame(how){
-  S.over=true;stopBed();renderLadder();
+  S.over=true;stopBed();stopVoice();renderLadder();
   const amount=how==='lost'?guaranteed():how==='quit'?(S.i>0?LADDER[S.i-1].v:0):LADDER[15].v;
   const words=amount===0?'Zero':LADDER.find(r=>r.v===amount).w;
   if(how==='won')cue('win');
@@ -804,7 +847,7 @@ function endGame(how){
 }
 
 /* ---------- chrome ---------- */
-$('#sound').onclick=e=>{SOUND=!SOUND;if(!SOUND)stopBed();e.target.setAttribute('aria-pressed',SOUND);
+$('#sound').onclick=e=>{SOUND=!SOUND;if(!SOUND){stopBed();stopVoice();}e.target.setAttribute('aria-pressed',SOUND);
   e.target.textContent=SOUND?'Sound on':'Sound off';if(SOUND)sfx.pick();};
 $('#restart').onclick=()=>{document.querySelectorAll('.love').forEach(x=>x.remove());startScreen();};
 
