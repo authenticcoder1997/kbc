@@ -77,7 +77,13 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
   transform:rotate(-32deg);opacity:.8}
 .ll.pending:disabled::after{display:none}
 
-.host{font-size:15.5px;color:var(--muted);min-height:24px;font-style:italic}
+.host{font-size:15.5px;color:#c6cfee;min-height:44px;font-style:italic;line-height:1.45;
+  display:flex;gap:12px;align-items:center;padding:6px 0}
+.host::before{content:"";flex:0 0 3px;align-self:stretch;border-radius:2px;
+  background:linear-gradient(180deg,var(--gold),rgba(246,196,83,0))}
+.host:empty::before{display:none}
+.host.new{animation:fadein .45s ease-out}
+@keyframes fadein{from{opacity:0;transform:translateY(-4px)}}
 .qcard{position:relative;padding:2px;clip-path:var(--hex);
   background:linear-gradient(90deg,var(--rim-soft),var(--rim) 50%,var(--rim-soft))}
 .qcard-in{clip-path:var(--hex);background:linear-gradient(180deg,#0d1741,#080d28);
@@ -230,6 +236,21 @@ const LADDER=[
 
 const BANK=[
 [ /* band 0 — aasaan */
+ {t:'Astronomy',q:'Which is the largest planet in our solar system?',o:['Saturn','Jupiter','Neptune','Earth'],a:1,f:'It is more than twice as massive as every other planet in the solar system put together.'},
+ {t:'Geography',q:'Which is the smallest continent by area?',o:['Europe','Australia','Antarctica','South America'],a:1,f:'It is also the only continent that is a single country.'},
+ {t:'Technology',q:"In a web address, what does 'www' stand for?",o:['World Wide Web','Wide World Web','World Web Wide','Web World Wide'],a:0,f:'Tim Berners-Lee proposed the idea in 1989 while working at CERN.'},
+ {t:'Science',q:'Which vitamin does the body make when skin is exposed to sunlight?',o:['Vitamin A','Vitamin C','Vitamin D','Vitamin K'],a:2,f:'Twenty minutes of morning sun does more for it than most supplements.'},
+ {t:'Geography',q:'The Ganga emerges from which glacier?',o:['Siachen','Gangotri','Zemu','Pindari'],a:1,f:'The stream that emerges there is the Bhagirathi — it becomes the Ganga only at Devprayag.'},
+ {t:'Wildlife',q:'Which bird is the national bird of India?',o:['Peacock','Sparrow','Great Indian Bustard','Sarus Crane'],a:0,f:'The Indian peafowl, to be exact — declared in 1963.'},
+ {t:'Sport',q:"In which sport is a score of zero called 'love'?",o:['Badminton','Tennis','Squash','Table tennis'],a:1,f:"Probably from 'l'oeuf', French for egg — an egg being the shape of a zero."},
+ {t:'Language',q:'Which language has the most native speakers in India?',o:['Bengali','Hindi','Marathi','Telugu'],a:1,f:'Bengali comes second, with Marathi and Telugu close behind it.'},
+ {t:'Geography',q:'What is the capital of Uttar Pradesh?',o:['Kanpur','Lucknow','Varanasi','Prayagraj'],a:1,f:'Kanpur is the larger city, but Lucknow has been the capital since 1921.'},
+ {t:'Chemistry',q:'Which metal is a liquid at room temperature?',o:['Mercury','Sodium','Lead','Tin'],a:0,f:'Bromine is liquid at room temperature too — but bromine is not a metal.'},
+ {t:'Festivals',q:'Which festival is known as the festival of colours?',o:['Holi','Pongal','Lohri','Baisakhi'],a:0,f:'The bonfire on the night before it is Holika Dahan.'},
+ {t:'History',q:"Who is known as the 'Father of the Nation' in India?",o:['Jawaharlal Nehru','Mahatma Gandhi','Sardar Patel','Subhas Chandra Bose'],a:1,f:'Subhas Chandra Bose is said to have been the first to address him that way, on radio in 1944.'},
+ {t:'Cricket',q:'How many wickets in consecutive balls make a hat-trick?',o:['Two','Three','Four','Five'],a:1,f:'The name comes from Victorian clubs presenting the bowler with a hat.'},
+ {t:'Geography',q:'Which sea lies between Europe and Africa?',o:['Red Sea','Black Sea','Mediterranean Sea','Caspian Sea'],a:2,f:"Its name means 'in the middle of the earth'."},
+ {t:'Science',q:'At sea level, water boils at what temperature?',o:['90°C','100°C','110°C','120°C'],a:1,f:'Up in Leh it boils at about 87°C — which is exactly why rice takes longer there.'},
  {t:'Astronomy',q:'Which planet is known as the Red Planet?',o:['Venus','Mars','Jupiter','Mercury'],a:1,f:'Mars looks red because its dust is rich in iron oxide — plain rust.'},
  {t:'Monuments',q:'The Taj Mahal stands in which city?',o:['Jaipur','Delhi','Agra','Lucknow'],a:2,f:'Shah Jahan built it for Mumtaz Mahal; the work took some twenty years.'},
  {t:'Wildlife',q:'Which animal is the national animal of India?',o:['Asiatic Lion','Bengal Tiger','Elephant','Peacock'],a:1,f:'The tiger took the title from the lion in 1972, the year Project Tiger began.'},
@@ -245,6 +266,22 @@ const BANK=[
  {t:'Geography',q:'Which is the highest mountain in the world?',o:['K2','Kanchenjunga','Mount Everest','Nanda Devi'],a:2,f:'It gains a few millimetres every year as India keeps pushing into Asia.'}
 ],
 [ /* band 1 — thoda sochiye */
+ {t:'Monuments',q:'The Charminar stands in which city?',o:['Hyderabad','Bijapur','Aurangabad','Mysuru'],a:0,f:'Built in 1591 by Muhammad Quli Qutb Shah, reportedly to mark the end of a plague.'},
+ {t:'Literature',q:"Who wrote 'The Discovery of India'?",o:['Mahatma Gandhi','Jawaharlal Nehru','S. Radhakrishnan','Maulana Azad'],a:1,f:'He wrote it in Ahmednagar Fort prison between 1942 and 1946.'},
+ {t:'Geography',q:'Which is the largest Indian state by area?',o:['Rajasthan','Madhya Pradesh','Maharashtra','Uttar Pradesh'],a:0,f:"Larger than Germany — about a tenth of India's land area."},
+ {t:'Sport',q:'In which sport did Dhyan Chand win three Olympic golds?',o:['Hockey','Football','Athletics','Wrestling'],a:0,f:'Amsterdam 1928, Los Angeles 1932 and Berlin 1936.'},
+ {t:'Astronomy',q:"Which planet is known as the 'Evening Star'?",o:['Venus','Mars','Mercury','Jupiter'],a:0,f:'It is the Morning Star as well — the same planet, seen on either side of the sun.'},
+ {t:'Monuments',q:'The Ajanta Caves are in which state?',o:['Maharashtra','Madhya Pradesh','Karnataka','Telangana'],a:0,f:'A British hunting party stumbled on them in 1819 after centuries under forest.'},
+ {t:'History',q:'Who was the first President of India?',o:['Rajendra Prasad','S. Radhakrishnan','Zakir Husain','V.V. Giri'],a:0,f:'He remains the only person to have served two full terms in the office.'},
+ {t:'Chemistry',q:'What is the chemical formula of common salt?',o:['NaCl','KCl','CaCO₃','NaHCO₃'],a:0,f:'The Dandi March of 1930 was a protest against the tax on exactly this.'},
+ {t:'Geography',q:'Which river flows past Delhi?',o:['Yamuna','Ganga','Gomti','Sutlej'],a:0,f:"It is the Ganga's longest tributary; the two meet at Prayagraj."},
+ {t:'World',q:'Which country gifted the Statue of Liberty to the United States?',o:['Britain','France','Spain','Netherlands'],a:1,f:'It arrived in 1885 in 350 pieces, packed into 214 crates.'},
+ {t:'History',q:'In which year did India become a Republic?',o:['1947','1949','1950','1952'],a:2,f:'26 January was chosen to echo the Purna Swaraj declaration of 1930.'},
+ {t:'Geography',q:'Which is the smallest Indian state by area?',o:['Goa','Sikkim','Tripura','Nagaland'],a:0,f:'It stayed a Portuguese territory until 1961, long after the rest of India was free.'},
+ {t:'Dance',q:'Bharatanatyam originated in which state?',o:['Tamil Nadu','Kerala','Karnataka','Andhra Pradesh'],a:0,f:'It grew out of the temple dance tradition of the Chola country.'},
+ {t:'Science',q:'Who is credited with inventing the telephone?',o:['Thomas Edison','Alexander Graham Bell','Guglielmo Marconi','Nikola Tesla'],a:1,f:'Elisha Gray filed a competing claim on the very same day in 1876.'},
+ {t:'Anatomy',q:'Which is the largest gland in the human body?',o:['Liver','Pancreas','Thyroid','Pituitary'],a:0,f:'It is also the only human organ that regrows to full size after part is removed.'},
+ {t:'Religion',q:'Who founded the Sikh faith?',o:['Guru Nanak','Guru Gobind Singh','Guru Arjan','Guru Tegh Bahadur'],a:0,f:'Born in 1469 at Talwandi, now Nankana Sahib in Pakistan.'},
  {t:'Geography',q:'Which Indian state has the longest coastline?',o:['Tamil Nadu','Gujarat','Andhra Pradesh','Maharashtra'],a:1,f:"Gujarat's coast runs about 1,600 km — nearly a fifth of India's shoreline."},
  {t:'History',q:"Who was India's first woman Prime Minister?",o:['Sarojini Naidu','Indira Gandhi','Pratibha Patil','Vijaya Lakshmi Pandit'],a:1,f:'She took office in 1966; Pratibha Patil became the first woman President in 2007.'},
  {t:'History',q:'Which Mughal emperor built the Red Fort in Delhi?',o:['Akbar','Babur','Shah Jahan','Aurangzeb'],a:2,f:'He shifted his capital from Agra to his new city, Shahjahanabad, in 1648.'},
@@ -262,6 +299,28 @@ const BANK=[
  {t:'Cities',q:"Which city is called the 'Silicon Valley of India'?",o:['Hyderabad','Pune','Bengaluru','Chennai'],a:2,f:"India's first electronics park, Electronics City, opened on its outskirts in 1978."}
 ],
 [ /* band 2 — mushkil */
+ {t:'Sport',q:'Who was the first Indian woman to win an Olympic medal?',o:['Karnam Malleswari','Mary Kom','Saina Nehwal','P.V. Sindhu'],a:0,f:'Weightlifting bronze at Sydney in 2000.'},
+ {t:'History',q:'In which year did the Simon Commission arrive in India?',o:['1919','1927','1928','1930'],a:2,f:"It was met with black flags and one cry everywhere it went: 'Simon, go back'."},
+ {t:'Architecture',q:'Who was the chief architect of the city of Chandigarh?',o:['Le Corbusier','Edwin Lutyens','Charles Correa','B.V. Doshi'],a:0,f:'He took over after the original planner, Matthew Nowicki, died in a plane crash.'},
+ {t:'Geography',q:'Which is the highest waterfall in India?',o:['Jog Falls','Kunchikal Falls','Dudhsagar Falls','Nohkalikai Falls'],a:1,f:'Jog is the more famous — but Kunchikal, also in Karnataka, is the taller of the two.'},
+ {t:'Science',q:'In which year was C.V. Raman awarded the Nobel Prize?',o:['1928','1930','1934','1938'],a:1,f:'He discovered the effect in 1928 and, the story goes, booked his Stockholm tickets months early.'},
+ {t:'Literature',q:"Who wrote 'Midnight's Children'?",o:['Salman Rushdie','Vikram Seth','Amitav Ghosh','Arundhati Roy'],a:0,f:"It won the Booker in 1981, and later the 'Booker of Bookers'."},
+ {t:'Geography',q:'Which is the highest mountain peak lying entirely within India?',o:['Kanchenjunga','Nanda Devi','Saltoro Kangri','Kamet'],a:1,f:'Kanchenjunga is taller, but it sits on the border with Nepal.'},
+ {t:'Rivers',q:'The Bhakra Nangal dam is built on which river?',o:['Sutlej','Beas','Ravi','Chenab'],a:0,f:"Nehru called dams like it 'the temples of modern India'."},
+ {t:'Chemistry',q:"Which acid is called the 'king of chemicals'?",o:['Sulphuric acid','Nitric acid','Hydrochloric acid','Acetic acid'],a:0,f:"A country's output of it was once used as a rough index of its industrial strength."},
+ {t:'Literature',q:"Who wrote the autobiography 'Wings of Fire'?",o:['A.P.J. Abdul Kalam','Vikram Sarabhai','Homi Bhabha','Raja Ramanna'],a:0,f:'Co-written with Arun Tiwari and published in 1999.'},
+ {t:'History',q:'Maharana Pratap fought the Battle of Haldighati against the forces of which emperor?',o:['Akbar','Babur','Jahangir','Aurangzeb'],a:0,f:"Akbar's army that day was commanded by Man Singh of Amber — himself a Rajput."},
+ {t:'Astronomy',q:'Which planet rotates on its side, tilted almost 98 degrees?',o:['Uranus','Neptune','Venus','Mercury'],a:0,f:'Most likely knocked over by a giant impact early in its life.'},
+ {t:'Reform',q:'Who founded the Ramakrishna Mission?',o:['Swami Vivekananda','Ramakrishna Paramhansa','Dayanand Saraswati','Sri Aurobindo'],a:0,f:'Founded in 1897 — and named for his guru, not for himself.'},
+ {t:'Wildlife',q:'Which is the national aquatic animal of India?',o:['Ganges river dolphin','Gharial','Olive ridley turtle','Blue whale'],a:0,f:'Declared in 2009. It is effectively blind, and hunts entirely by echolocation.'},
+ {t:'Anatomy',q:'Which is the longest bone in the human body?',o:['Femur','Tibia','Humerus','Fibula'],a:0,f:'Roughly a quarter of your height, and strong enough to take a tonne of load.'},
+ {t:'Literature',q:"'Vande Mataram' first appeared in which novel?",o:['Anandamath','Durgeshnandini','Gora','Devdas'],a:0,f:'Bankim Chandra Chattopadhyay published it in 1882.'},
+ {t:'Reform',q:'Which Governor-General abolished sati in 1829?',o:['Lord William Bentinck','Lord Dalhousie','Lord Cornwallis','Warren Hastings'],a:0,f:'He acted on a campaign led for years by Raja Ram Mohan Roy.'},
+ {t:'Language',q:'Konkani is the official language of which state?',o:['Goa','Maharashtra','Karnataka','Kerala'],a:0,f:'It is written in five different scripts, depending on who is writing it.'},
+ {t:'Chemistry',q:"What is the chemical name of 'laughing gas'?",o:['Nitrous oxide','Nitric oxide','Nitrogen dioxide','Ammonia'],a:0,f:'Used as an anaesthetic since the 1840s, and still used in dentistry.'},
+ {t:'Monuments',q:'The Elephanta Caves are dedicated mainly to which deity?',o:['Shiva','Vishnu','Surya','Ganesha'],a:0,f:'The three-headed Trimurti sculpture there stands nearly six metres tall.'},
+ {t:'Science',q:'The study of earthquakes is called what?',o:['Seismology','Geology','Volcanology','Meteorology'],a:0,f:'The first known instrument for detecting them was built in China in 132 CE.'},
+ {t:'Geography',q:'India shares its longest land border with which country?',o:['Bangladesh','China','Pakistan','Nepal'],a:0,f:'About 4,000 km — longer than the borders with China or Pakistan.'},
  {t:'History',q:'Who was the first Governor-General of independent India?',o:['C. Rajagopalachari','Lord Mountbatten','Rajendra Prasad','Lord Wavell'],a:1,f:'Rajagopalachari followed him in 1948 — the first and last Indian to hold the post.'},
  {t:'History',q:'The Battle of Plassey was fought in which year?',o:['1757','1764','1739','1772'],a:0,f:"Mir Jafar's defection settled it before the fighting had properly begun."},
  {t:'Constitution',q:'Which Article of the Constitution guarantees the right to constitutional remedies?',o:['Article 14','Article 19','Article 21','Article 32'],a:3,f:"Ambedkar called Article 32 'the very soul of the Constitution'."},
@@ -279,6 +338,19 @@ const BANK=[
  {t:'History',q:'Who was the first woman to preside over the Indian National Congress?',o:['Sarojini Naidu','Annie Besant','Nellie Sengupta','Vijaya Lakshmi Pandit'],a:1,f:'She chaired the 1917 session; Sarojini Naidu, in 1925, was the first Indian woman to do so.'}
 ],
 [ /* band 3 — sirf mahir jaante hain */
+ {t:'History',q:'Who was the first Indian elected to the British House of Commons?',o:['Dadabhai Naoroji','Gopal Krishna Gokhale','M.M. Bhownaggree','W.C. Bonnerjee'],a:0,f:'He won Finsbury Central in 1892 by five votes, and was nicknamed Mr Narrow Majority.'},
+ {t:'History',q:'In which year did the Maharaja of Jammu and Kashmir sign the Instrument of Accession?',o:['1947','1948','1949','1950'],a:0,f:'Signed by Maharaja Hari Singh on 26 October 1947.'},
+ {t:'Space',q:'Who is regarded as the father of the Indian space programme?',o:['Vikram Sarabhai','Homi Bhabha','A.P.J. Abdul Kalam','Satish Dhawan'],a:0,f:'Parts of India’s first rockets were carried to the Thumba launch site by bicycle.'},
+ {t:'Cinema',q:'Which was the first Indian film nominated for the Academy Award for Best Foreign Language Film?',o:['Mother India','Do Bigha Zamin','Salaam Bombay!','Lagaan'],a:0,f:'It lost in 1958 — reportedly by a single vote.'},
+ {t:'Science',q:'In which year was the Indian Institute of Science, Bengaluru, founded?',o:['1899','1909','1911','1920'],a:1,f:'It grew from a proposal by Jamsetji Tata, who did not live to see it open.'},
+ {t:'Politics',q:'Who was the first Speaker of the Lok Sabha?',o:['G.V. Mavalankar','M.A. Ayyangar','Hukam Singh','N. Sanjiva Reddy'],a:0,f:"He is remembered as the 'father of the Lok Sabha'."},
+ {t:'Constitution',q:'Which Article of the Constitution abolishes untouchability?',o:['Article 15','Article 17','Article 21','Article 25'],a:1,f:'It is one of the few fundamental rights enforceable against private individuals as well.'},
+ {t:'History',q:"Who commanded the Rani of Jhansi Regiment of the Indian National Army?",o:['Lakshmi Sahgal','Aruna Asaf Ali','Usha Mehta','Sucheta Kripalani'],a:0,f:'She went on to run a clinic in Kanpur for more than fifty years.'},
+ {t:'Economy',q:'Which is the oldest stock exchange in Asia?',o:['Bombay Stock Exchange','National Stock Exchange','Tokyo Stock Exchange','Shanghai Stock Exchange'],a:0,f:'It began in 1875 under a banyan tree on what is now Dalal Street.'},
+ {t:'Law',q:'Who was the first woman judge of the Supreme Court of India?',o:['M. Fathima Beevi','Leila Seth','Ruma Pal','Sujata Manohar'],a:0,f:'Appointed in 1989 — forty years after the court was established.'},
+ {t:'Monuments',q:'The Brihadeeswarar Temple at Thanjavur was built by which dynasty?',o:['Chola','Chalukya','Pallava','Pandya'],a:0,f:'Rajaraja I completed it around 1010 CE; its tower is 66 metres of solid stone.'},
+ {t:'Literature',q:"Who is credited with composing the 'Panchatantra'?",o:['Vishnu Sharma','Kalidasa','Valmiki','Kautilya'],a:0,f:'Translated into Persian, then Arabic, then most of Europe — one of the most travelled books ever written.'},
+ {t:'Design',q:'Who designed the Indian rupee symbol ₹?',o:['D. Udaya Kumar','Nandan Nilekani','Raghava Rao','S. Gurumurthy'],a:0,f:"Adopted in 2010, it fuses the Devanagari 'र' with the Latin R."},
  {t:'Elections',q:"Who was India's first Chief Election Commissioner?",o:['Sukumar Sen','T.N. Seshan','K.V.K. Sundaram','S.P. Sen Verma'],a:0,f:"A mathematician by training, he ran the world's largest ever election in 1951-52."},
  {t:'History',q:"The 'Doctrine of Lapse' was pursued by which Governor-General?",o:['Lord Dalhousie','Lord Canning','Lord Cornwallis','Lord Bentinck'],a:0,f:'Jhansi was annexed under it in 1854 — a grievance that fed straight into 1857.'},
  {t:'Literature',q:"Who wrote 'Rajatarangini', the chronicle of the kings of Kashmir?",o:['Kalhana','Bilhana','Ksemendra','Somadeva'],a:0,f:"Written around 1150 CE, it is often called India's first true work of history."},
@@ -302,16 +374,43 @@ const EXPERTS=[
  {n:'Harish Gokhale',f:'Six-time national quiz champion',d:['Geography','Cricket','Currency','World','Cities','Economy','Wildlife']}
 ];
 
-const PATTER=[
- 'Aaram se soch kar jawaab dijiye. Koi jaldi nahi hai.',
- 'Yeh sawaal aapke liye bilkul aasaan hona chahiye.',
- 'Devi-yon aur sajjano, dhyaan se suniye.',
- 'Computer ji, agla sawaal screen par laaiye.',
- 'Yahan se aage har jawaab bhaari padta hai.',
- 'Sochiye. Samay leejiye. Jaldi kuch nahi hai.',
- 'Yeh sawaal maine bhi do baar padha tha.',
- 'Aapke chehre par confidence dikh raha hai.'
-];
+const HOST={
+ first:'{name}, hot seat par aapka swagat hai. Pehla sawaal, aur pehli jeet.',
+ open:[
+  ['Aaram se dekhiye. Shuruaat halki hai.',
+   'Yeh sawaal to aap so kar bhi bata denge.',
+   'Computer ji, agla sawaal screen par laaiye.',
+   'Char options hain — chaaron sun leejiye, phir boliye.'],
+  ['Ab thoda sochna padega.',
+   'Sawaal aasaan lagta hai... lekin options dhyaan se padhiye.',
+   'Jaldi kis baat ki hai? Samay leejiye.',
+   'Yahan se paisa dikhna shuru hota hai.'],
+  ['Ab hum wahan pahunch gaye hain jahan har jawaab bhaari hai.',
+   'Yeh sawaal maine bhi do baar padha tha.',
+   'Lifeline bachane ka koi inaam nahi milta — yaad rakhiye.',
+   'Dhyaan se. Yahan galti maaf nahi hoti.'],
+  ['Ek galti, aur poora safar wapas padav par.',
+   'Iska jawaab bahut, bahut kam log jaante hain.',
+   'Aaram se. Yeh raat aapki ho sakti hai.',
+   'Sochiye. Poora desh saans roke baitha hai.']],
+ lock:['Aapne {L} lock kiya hai. Computer ji, {L} lock kar dijiye.',
+       '{L} — {opt}. Lock kiya ja chuka hai.',
+       'Final answer {L}. Computer ji, lock kar dijiye.'],
+ right:[
+  ['Bilkul sahi jawaab! Aap jeet chuke hain {amt}.','Sahi! {amt} aapke naam.','Ekdum sahi jawaab — {amt}.'],
+  ['Bilkul sahi jawaab! {amt} aapke ho gaye.','Sahi jawaab! Aap aage badh rahe hain — {amt}.'],
+  ['Sahi jawaab! Taaliyan! Aap jeet chuke hain {amt}.','Bilkul sahi. {amt}. Kamaal kar diya aapne.'],
+  ['Sa... hi jawaab! {amt}! Yakeen nahi hota!','Bilkul sahi jawaab. {amt} — poora studio khada ho gaya hai.']],
+ jackpot:['{name}, aap sirf crorepati nahi — saat crore ke vijeta hain. Aaj ki raat aapke naam.'],
+ padav:'Aur aap padav paar kar chuke hain — {amt} ab pakka aapka hua.',
+ wrong:['Nahi... yeh sahi jawaab nahi tha. Sahi jawaab tha {L} — {opt}.',
+        'Afsos. Sahi jawaab tha {L} — {opt}.'],
+ fifty:'Computer ji, do galat options hata dijiye... Ab do bache hain, aur chances double.',
+ poll:'Audience ne apna faisla de diya hai. Lekin faisla to aapka hai.',
+ expert:'Expert ki raay aa chuki hai. Sunna zaroori tha — maanna zaroori nahi.',
+ flip:'Sawaal badal diya gaya hai. Nayi kismat, wahi raqam.',
+ quit:'Samajhdaari ka faisla. Jo jeeta hai, wo koi cheen nahi sakta.'
+};
 
 /* ============================ helpers ============================ */
 const $=s=>document.querySelector(s);
@@ -322,27 +421,79 @@ const rand=a=>a[Math.floor(Math.random()*a.length)];
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const bandFor=i=>i<5?0:i<10?1:i<14?2:3;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const fill=(t,m)=>t.replace(/\{(\w+)\}/g,(_,k)=>m[k]!=null?m[k]:'');
+function say(t){const h=$('#host');h.textContent=t;h.classList.remove('new');void h.offsetWidth;h.classList.add('new');}
 
-/* ---- sound: synthesized, no files ---- */
-let AC=null,SOUND=true;
-function tone(freq,dur,type='sine',gain=.08,slide){
-  if(!SOUND)return; try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
+/* ---- score: original cues, synthesized live — no samples, no files ---- */
+let AC=null,SOUND=true,MASTER=null,BED=null;
+function ac(){
+  if(!SOUND)return null;
+  try{ if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();
+       MASTER=AC.createGain();MASTER.gain.value=.9;MASTER.connect(AC.destination);} }catch(e){return null;}
   if(AC.state==='suspended')AC.resume();
-  const o=AC.createOscillator(),g=AC.createGain();
-  o.type=type;o.frequency.setValueAtTime(freq,AC.currentTime);
-  if(slide)o.frequency.exponentialRampToValueAtTime(slide,AC.currentTime+dur);
-  g.gain.setValueAtTime(gain,AC.currentTime);
-  g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+dur);
-  o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+dur);
+  return AC;
+}
+function note(f,dur,opts){
+  const c=ac();if(!c)return;
+  const {type='sine',gain=.08,at=0,slide=null}=opts||{};
+  const t=c.currentTime+at,o=c.createOscillator(),g=c.createGain();
+  o.type=type;o.frequency.setValueAtTime(f,t);
+  if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);
+  g.gain.setValueAtTime(.0001,t);
+  g.gain.exponentialRampToValueAtTime(gain,t+.012);
+  g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(g);g.connect(MASTER);o.start(t);o.stop(t+dur+.03);
+}
+function hit(dur,gain,cut){
+  const c=ac();if(!c)return;
+  dur=dur||.25;gain=gain||.05;cut=cut||1800;
+  const b=c.createBuffer(1,Math.max(1,Math.floor(c.sampleRate*dur)),c.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);
+  const src=c.createBufferSource();src.buffer=b;
+  const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=cut;
+  const g=c.createGain();g.gain.value=gain;
+  src.connect(f);f.connect(g);g.connect(MASTER);src.start();
 }
 const sfx={
-  pick:()=>tone(660,.08,'triangle',.05),
-  lock:()=>{tone(180,.5,'sawtooth',.07,80);setTimeout(()=>tone(120,.7,'sine',.06,60),90);},
-  tick:()=>tone(1200,.04,'square',.025),
-  right:()=>{[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.35,'triangle',.07),i*110));},
-  wrong:()=>{tone(140,.9,'sawtooth',.08,60);setTimeout(()=>tone(90,1.1,'square',.05,45),120);},
-  win:()=>{[523,659,784,1047,1319,1568].forEach((f,i)=>setTimeout(()=>tone(f,.5,'triangle',.08),i*130));}
+  theme(){
+    note(110,3.4,{type:'sawtooth',gain:.028});
+    note(164.8,3.4,{type:'sine',gain:.022});
+    [[0,440],[.3,523.25],[.6,587.33],[.9,659.25],[1.2,587.33],[1.5,880]]
+      .forEach(function(n,i){note(n[1],i===5?1.3:.32,{type:'triangle',gain:.07,at:n[0]});});
+    [0,.3,.6,.9,1.2,1.5].forEach(at=>setTimeout(()=>hit(.13,.04,900),at*1000));
+  },
+  pick(){note(660,.09,{type:'triangle',gain:.05});},
+  whoosh(){hit(.5,.06,2600);note(180,.5,{type:'sine',gain:.04,slide:520});},
+  lock(){note(150,.65,{type:'sawtooth',gain:.07,slide:68});hit(.42,.06,600);},
+  tick(){note(1400,.05,{type:'square',gain:.018});hit(.05,.018,3000);},
+  right(){[523.25,659.25,783.99,1046.5].forEach((f,i)=>note(f,.45,{type:'triangle',gain:.07,at:i*.11}));},
+  wrong(){note(160,1,{type:'sawtooth',gain:.07,slide:55});note(110,1.2,{type:'square',gain:.035,at:.1,slide:40});},
+  padav(){[392,523.25,659.25].forEach((f,i)=>note(f,.5,{type:'triangle',gain:.06,at:i*.13}));},
+  quit(){[440,392,349.23].forEach((f,i)=>note(f,.5,{type:'sine',gain:.05,at:i*.17}));},
+  win(){[523.25,659.25,783.99,1046.5,1318.5,1568].forEach((f,i)=>note(f,.6,{type:'triangle',gain:.08,at:i*.14}));
+    [0,.14,.28,.42,.56,.7].forEach(at=>setTimeout(()=>hit(.2,.05,1200),at*1000));}
 };
+/* tension bed: drone plus a pulse that quickens with the prize */
+function startBed(level){
+  if(BED||!SOUND||!ac())return;
+  const c=AC,g=c.createGain();g.gain.setValueAtTime(.0001,c.currentTime);
+  g.connect(MASTER);g.gain.exponentialRampToValueAtTime(.55,c.currentTime+1.6);
+  const drone=c.createOscillator();drone.type='sine';drone.frequency.value=55;
+  const fifth=c.createOscillator();fifth.type='triangle';fifth.frequency.value=82.4;
+  const dg=c.createGain();dg.gain.value=.055;
+  drone.connect(dg);fifth.connect(dg);dg.connect(g);drone.start();fifth.start();
+  const beat=level>=14?600:level>=12?780:1000;
+  const timer=setInterval(function(){note(58,.22,{type:'sine',gain:.07});hit(.1,.028,400);},beat);
+  BED={g:g,nodes:[drone,fifth],timer:timer};
+}
+function stopBed(){
+  if(!BED)return;const b=BED;BED=null;clearInterval(b.timer);
+  try{b.g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+.4);
+      b.nodes.forEach(n=>n.stop(AC.currentTime+.5));}catch(e){}
+}
+function updateBed(){
+  if(!S||S.over||S.locked||S.reveal||bandFor(S.i)<2)stopBed();else startBed(S.i);
+}
 
 /* ============================ state ============================ */
 let S=null;
@@ -350,17 +501,26 @@ function newGame(name){
   const used=BANK.map(()=>new Set());
   S={name:name||'Aap',i:0,banked:0,over:false,locked:false,sel:null,used,
      q:null,removed:[],ll:{fifty:true,poll:true,expert:true,flip:true},pending:null};
-  draw();render();
+  draw();render();sfx.theme();
 }
+const SEEN='kbc.seen.v1';
+const qid=q=>{let h=5381;for(let i=0;i<q.length;i++)h=((h*33)^q.charCodeAt(i))>>>0;return h.toString(36);};
+const loadSeen=()=>{try{return JSON.parse(localStorage.getItem(SEEN))||{};}catch(e){return {};}};
+const saveSeen=o=>{try{localStorage.setItem(SEEN,JSON.stringify(o));}catch(e){}};
 function draw(){
-  const b=bandFor(S.i),pool=BANK[b],u=S.used[b];
+  const b=bandFor(S.i),pool=BANK[b],u=S.used[b],seen=loadSeen();
   let idx=[...pool.keys()].filter(k=>!u.has(k));
+  const fresh=idx.filter(k=>!seen[qid(pool[k].q)]);
+  if(fresh.length)idx=fresh;                      /* never-seen questions first */
+  else pool.forEach(x=>delete seen[qid(x.q)]);    /* band exhausted: start the cycle over */
   if(!idx.length){u.clear();idx=[...pool.keys()];}
   const k=rand(idx);u.add(k);
   const src=pool[k];
+  seen[qid(src.q)]=1;saveSeen(seen);
   const order=shuffle([0,1,2,3]);
   S.q={t:src.t,q:src.q,f:src.f,o:order.map(j=>src.o[j]),a:order.indexOf(src.a)};
-  S.sel=null;S.locked=false;S.removed=[];S.patter=rand(PATTER);
+  S.sel=null;S.locked=false;S.removed=[];
+  S.patter=S.i===0?fill(HOST.first,{name:S.name}):rand(HOST.open[b]);
 }
 const guaranteed=()=>{let g=0;for(let k=0;k<S.i;k++)if(LADDER[k].safe)g=LADDER[k].v;return g;};
 
@@ -372,8 +532,8 @@ function render(){
   $('#guar').innerHTML='Guaranteed <b>'+rupee(guaranteed())+'</b>';
   $('#topic').textContent=S.q.t;
   $('#qtext').textContent=S.q.q;
-  $('#host').textContent=S.locked?'':S.patter;
-  renderLifelines();renderOpts();renderLadder();renderTray();
+  if(!S.locked&&!S.reveal)say(S.patter);
+  renderLifelines();renderOpts();renderLadder();renderTray();updateBed();
 }
 function renderLifelines(){
   const defs=[['fifty','50 : 50'],['poll','Audience Poll'],['expert','Ask the Expert'],['flip','Flip the Question']];
@@ -426,7 +586,9 @@ document.addEventListener('click',e=>{
 });
 
 async function lock(){
-  S.locked=true;$('#host').textContent='';renderOpts();renderLifelines();renderTray();
+  S.locked=true;stopBed();
+  say(fill(rand(HOST.lock),{L:'ABCD'[S.sel],opt:S.q.o[S.sel]}));
+  renderOpts();renderLifelines();renderTray();
   sfx.lock();
   const suspense=800+S.i*180;
   const t=setInterval(sfx.tick,320);
@@ -440,10 +602,16 @@ async function lock(){
 }
 function showNugget(won){
   const L=LADDER[S.i];
-  const head=won
-    ? (S.i===15?'Aap saat crore jeet chuke hain!':`Bilkul sahi jawaab. Aap jeet chuke hain ${rupee(L.v)}.`)
-    : `Yeh sahi jawaab nahi tha. Sahi jawaab tha ${'ABCD'[S.q.a]} — ${S.q.o[S.q.a]}.`;
-  $('#host').textContent=head;
+  const b=bandFor(S.i);
+  let head;
+  if(won){
+    head = S.i===15 ? fill(rand(HOST.jackpot),{name:S.name})
+                    : fill(rand(HOST.right[b]),{amt:rupee(L.v)});
+    if(L.safe){head+=' '+fill(HOST.padav,{amt:rupee(L.v)});setTimeout(sfx.padav,700);}
+  }else{
+    head = fill(rand(HOST.wrong),{L:'ABCD'[S.q.a],opt:S.q.o[S.q.a]});
+  }
+  say(head);
   $('#tray').innerHTML=
     `<div class="nugget"><b>Waise aapko bata dein —</b> ${S.q.f}</div>`+
     (won&&S.i<15?`<button class="btn" id="nextbtn">Next question</button>`:'');
@@ -453,7 +621,7 @@ function showNugget(won){
     setTimeout(()=>endGame(won?'won':'lost'),1400);
   }
 }
-function quit(){ endGame('quit'); }
+function quit(){ sfx.quit(); endGame('quit'); }
 
 /* ---------- lifelines ---------- */
 function useLifeline(k){
@@ -463,19 +631,19 @@ function useLifeline(k){
     const wrong=[0,1,2,3].filter(i=>i!==S.q.a);
     S.removed=shuffle(wrong).slice(0,2);
     if(S.removed.includes(S.sel))S.sel=null;
-    renderOpts();renderLifelines();renderTray();
-    $('#host').textContent='Do galat options hata diye gaye hain.';
+    sfx.whoosh();renderOpts();renderLifelines();renderTray();
+    say(HOST.fifty);
     return;
   }
   if(k==='flip'){
     S.ll.flip=false;
     const spent=Object.entries(S.ll).filter(([,v])=>!v).length;
-    draw();render();
-    $('#host').textContent='Naya sawaal, usi raqam ke liye.'+(spent>1?' Lifelines jo kharch ho chuki hain, wo wapas nahi aatin.':'');
+    sfx.whoosh();draw();render();
+    say(HOST.flip+(spent>1?' Jo lifelines kharch ho chuki hain, wo wapas nahi aatin.':''));
     return;
   }
-  if(k==='poll'){S.ll.poll=false;renderLifelines();showPoll();return;}
-  if(k==='expert'){S.ll.expert=false;renderLifelines();showExpert();return;}
+  if(k==='poll'){S.ll.poll=false;sfx.whoosh();renderLifelines();say(HOST.poll);showPoll();return;}
+  if(k==='expert'){S.ll.expert=false;sfx.whoosh();renderLifelines();say(HOST.expert);showExpert();return;}
 }
 function pollNumbers(){
   const b=bandFor(S.i),a=S.q.a;
@@ -555,7 +723,7 @@ function startScreen(){
   inp.onkeydown=e=>{if(e.key==='Enter')go();};
 }
 function endGame(how){
-  S.over=true;renderLadder();
+  S.over=true;stopBed();renderLadder();
   const amount=how==='lost'?guaranteed():how==='quit'?(S.i>0?LADDER[S.i-1].v:0):LADDER[15].v;
   const words=amount===0?'Zero':LADDER.find(r=>r.v===amount).w;
   if(how==='won')sfx.win();
@@ -578,7 +746,7 @@ function endGame(how){
 }
 
 /* ---------- chrome ---------- */
-$('#sound').onclick=e=>{SOUND=!SOUND;e.target.setAttribute('aria-pressed',SOUND);
+$('#sound').onclick=e=>{SOUND=!SOUND;if(!SOUND)stopBed();e.target.setAttribute('aria-pressed',SOUND);
   e.target.textContent=SOUND?'Sound on':'Sound off';if(SOUND)sfx.pick();};
 $('#restart').onclick=()=>startScreen();
 
