@@ -169,6 +169,17 @@ input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px soli
 .recap{font-size:14.5px;color:var(--muted);line-height:1.6;margin-bottom:20px}
 .recap b{color:var(--chalk);font-weight:600}
 .row{display:flex;gap:10px;flex-wrap:wrap}
+.love{position:fixed;left:50%;top:24px;transform:translateX(-50%);z-index:30;
+  font-family:var(--disp);font-size:clamp(19px,4.2vw,30px);letter-spacing:.02em;white-space:nowrap;
+  display:flex;gap:14px;align-items:center;padding:14px 30px;
+  border:1px solid var(--gold-deep);color:var(--gold);
+  background:linear-gradient(180deg,#20143a,#0a0c22);box-shadow:0 22px 60px rgba(0,0,0,.65);
+  animation:lovein .6s cubic-bezier(.2,.9,.3,1.4)}
+.love .hrt{color:#ff5c7a;animation:beat 1.05s ease-in-out infinite}
+.love.out{animation:loveout .55s ease-in forwards}
+@keyframes lovein{from{opacity:0;transform:translate(-50%,-18px) scale(.9)}}
+@keyframes loveout{to{opacity:0;transform:translate(-50%,-18px)}}
+@keyframes beat{45%{transform:scale(1.3)}70%{transform:scale(1.05)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (max-width:860px){
   .wrap{padding:14px 12px 32px}
@@ -532,9 +543,22 @@ function updateBed(){
 let S=null;
 function newGame(name){
   const used=BANK.map(()=>new Set());
+  name=(name||'').trim();
+  if(/^arya$/i.test(name))name='Arya';
   S={name:name||'Aap',i:0,banked:0,over:false,locked:false,sel:null,used,
      q:null,removed:[],ll:{fifty:true,poll:true,expert:true,flip:true},pending:null};
   draw();render();cue('theme');
+  if(/^arya$/i.test(S.name))loveNote();
+}
+function loveNote(){
+  const d=document.createElement('div');
+  d.className='love';
+  d.innerHTML='Parag <span class="hrt">\u2665</span> Arya';
+  document.body.appendChild(d);
+  say('Parag loves Arya.');
+  setTimeout(function(){[392,523.25,659.25,783.99].forEach(function(f,i){
+    note(f,.55,{type:'triangle',gain:.06,at:i*.14});});},250);
+  setTimeout(function(){d.classList.add('out');setTimeout(function(){d.remove();},600);},4600);
 }
 const SEEN='kbc.seen.v1';
 const qid=q=>{let h=5381;for(let i=0;i<q.length;i++)h=((h*33)^q.charCodeAt(i))>>>0;return h.toString(36);};
