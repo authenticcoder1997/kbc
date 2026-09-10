@@ -1,1 +1,5 @@
 .DS_Store
+sounds/*.mp3
+sounds/*.m4a
+sounds/*.wav
+sounds/*.ogg

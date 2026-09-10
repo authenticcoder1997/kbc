@@ -380,19 +380,27 @@ const HOST={
   ['Aaram se dekhiye. Shuruaat halki hai.',
    'Yeh sawaal to aap so kar bhi bata denge.',
    'Computer ji, agla sawaal screen par laaiye.',
-   'Char options hain — chaaron sun leejiye, phir boliye.'],
+   'Char options hain — chaaron sun leejiye, phir boliye.',
+   'Itna aasaan sawaal, aur itni khamoshi? Boliye.',
+   'Yeh to warm-up hai. Asli khel aage hai.'],
   ['Ab thoda sochna padega.',
    'Sawaal aasaan lagta hai... lekin options dhyaan se padhiye.',
    'Jaldi kis baat ki hai? Samay leejiye.',
-   'Yahan se paisa dikhna shuru hota hai.'],
+   'Yahan se paisa dikhna shuru hota hai.',
+   'Ek baar phir padhiye. Jaldi mein galti hoti hai.',
+   'Aapke chehre par confidence hai. Achhi baat hai.'],
   ['Ab hum wahan pahunch gaye hain jahan har jawaab bhaari hai.',
    'Yeh sawaal maine bhi do baar padha tha.',
    'Lifeline bachane ka koi inaam nahi milta — yaad rakhiye.',
-   'Dhyaan se. Yahan galti maaf nahi hoti.'],
+   'Dhyaan se. Yahan galti maaf nahi hoti.',
+   'Ab sirf gyaan kaam aayega, tukka nahi.',
+   'Zaroorat lage to lifeline leejiye. Isi din ke liye rakhi hain.'],
   ['Ek galti, aur poora safar wapas padav par.',
    'Iska jawaab bahut, bahut kam log jaante hain.',
    'Aaram se. Yeh raat aapki ho sakti hai.',
-   'Sochiye. Poora desh saans roke baitha hai.']],
+   'Sochiye. Poora desh saans roke baitha hai.',
+   'Itni door bahut kam log pahunchte hain. Aap pahunche hain.',
+   'Jawaab pata ho to hi lock kijiye. Warna quit karna koi haar nahi.']],
  lock:['Aapne {L} lock kiya hai. Computer ji, {L} lock kar dijiye.',
        '{L} — {opt}. Lock kiya ja chuka hai.',
        'Final answer {L}. Computer ji, lock kar dijiye.'],
@@ -400,11 +408,13 @@ const HOST={
   ['Bilkul sahi jawaab! Aap jeet chuke hain {amt}.','Sahi! {amt} aapke naam.','Ekdum sahi jawaab — {amt}.'],
   ['Bilkul sahi jawaab! {amt} aapke ho gaye.','Sahi jawaab! Aap aage badh rahe hain — {amt}.'],
   ['Sahi jawaab! Taaliyan! Aap jeet chuke hain {amt}.','Bilkul sahi. {amt}. Kamaal kar diya aapne.'],
-  ['Sa... hi jawaab! {amt}! Yakeen nahi hota!','Bilkul sahi jawaab. {amt} — poora studio khada ho gaya hai.']],
+  ['Sa... hi jawaab! {amt}! Yakeen nahi hota!','Bilkul sahi jawaab. {amt} — poora studio khada ho gaya hai.',
+   'Sahi jawaab! {amt}! Aaj ki raat kuch aur hi hai.']],
  jackpot:['{name}, aap sirf crorepati nahi — saat crore ke vijeta hain. Aaj ki raat aapke naam.'],
  padav:'Aur aap padav paar kar chuke hain — {amt} ab pakka aapka hua.',
  wrong:['Nahi... yeh sahi jawaab nahi tha. Sahi jawaab tha {L} — {opt}.',
-        'Afsos. Sahi jawaab tha {L} — {opt}.'],
+        'Afsos. Sahi jawaab tha {L} — {opt}.',
+        'Nahi. Jawaab tha {L} — {opt}. Lekin aap yahan tak aaye, yeh bhi kam nahi.'],
  fifty:'Computer ji, do galat options hata dijiye... Ab do bache hain, aur chances double.',
  poll:'Audience ne apna faisla de diya hai. Lekin faisla to aapka hai.',
  expert:'Expert ki raay aa chuki hai. Sunna zaroori tha — maanna zaroori nahi.',
@@ -473,9 +483,30 @@ const sfx={
   win(){[523.25,659.25,783.99,1046.5,1318.5,1568].forEach((f,i)=>note(f,.6,{type:'triangle',gain:.08,at:i*.14}));
     [0,.14,.28,.42,.56,.7].forEach(at=>setTimeout(()=>hit(.2,.05,1200),at*1000));}
 };
-/* tension bed: drone plus a pulse that quickens with the prize */
+/* ---- optional sound pack: any file present in sounds/ replaces the synth cue ---- */
+const PACK={theme:'theme',lifeline:'lifeline',lock:'lock',right:'correct',
+            wrong:'wrong',padav:'padav',win:'win',quit:'quit',bed:'suspense'};
+const AUD={};
+(function loadPack(){
+  Object.keys(PACK).forEach(function(k){
+    const el=new Audio('sounds/'+PACK[k]+'.mp3');
+    el.preload='auto'; el.volume=.75;
+    if(k==='bed'){el.loop=true;el.volume=.5;}
+    el.addEventListener('canplaythrough',function(){AUD[k]=el;},{once:true});
+    el.addEventListener('error',function(){},{once:true});
+  });
+})();
+function cue(name){
+  if(!SOUND)return;
+  const a=AUD[name];
+  if(a){ try{a.currentTime=0;}catch(e){} a.play().catch(function(){ if(sfx[name])sfx[name](); }); return; }
+  if(sfx[name])sfx[name]();
+}
+/* tension bed: a looped track if you supplied one, else drone plus a pulse that quickens */
 function startBed(level){
-  if(BED||!SOUND||!ac())return;
+  if(BED||!SOUND)return;
+  if(AUD.bed){ AUD.bed.play().catch(function(){}); BED={track:AUD.bed}; return; }
+  if(!ac())return;
   const c=AC,g=c.createGain();g.gain.setValueAtTime(.0001,c.currentTime);
   g.connect(MASTER);g.gain.exponentialRampToValueAtTime(.55,c.currentTime+1.6);
   const drone=c.createOscillator();drone.type='sine';drone.frequency.value=55;
@@ -487,7 +518,9 @@ function startBed(level){
   BED={g:g,nodes:[drone,fifth],timer:timer};
 }
 function stopBed(){
-  if(!BED)return;const b=BED;BED=null;clearInterval(b.timer);
+  if(!BED)return;const b=BED;BED=null;
+  if(b.track){try{b.track.pause();b.track.currentTime=0;}catch(e){}return;}
+  clearInterval(b.timer);
   try{b.g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+.4);
       b.nodes.forEach(n=>n.stop(AC.currentTime+.5));}catch(e){}
 }
@@ -501,7 +534,7 @@ function newGame(name){
   const used=BANK.map(()=>new Set());
   S={name:name||'Aap',i:0,banked:0,over:false,locked:false,sel:null,used,
      q:null,removed:[],ll:{fifty:true,poll:true,expert:true,flip:true},pending:null};
-  draw();render();sfx.theme();
+  draw();render();cue('theme');
 }
 const SEEN='kbc.seen.v1';
 const qid=q=>{let h=5381;for(let i=0;i<q.length;i++)h=((h*33)^q.charCodeAt(i))>>>0;return h.toString(36);};
@@ -589,14 +622,14 @@ async function lock(){
   S.locked=true;stopBed();
   say(fill(rand(HOST.lock),{L:'ABCD'[S.sel],opt:S.q.o[S.sel]}));
   renderOpts();renderLifelines();renderTray();
-  sfx.lock();
+  cue('lock');
   const suspense=800+S.i*180;
   const t=setInterval(sfx.tick,320);
   await sleep(suspense);clearInterval(t);
   const won=S.sel===S.q.a;
   S.reveal=true;S.showAns=won;renderOpts();
-  if(won){sfx.right();}
-  else{sfx.wrong();await sleep(900);S.showAns=true;renderOpts();}
+  if(won){cue('right');}
+  else{cue('wrong');await sleep(900);S.showAns=true;renderOpts();}
   await sleep(600);
   showNugget(won);
 }
@@ -607,7 +640,7 @@ function showNugget(won){
   if(won){
     head = S.i===15 ? fill(rand(HOST.jackpot),{name:S.name})
                     : fill(rand(HOST.right[b]),{amt:rupee(L.v)});
-    if(L.safe){head+=' '+fill(HOST.padav,{amt:rupee(L.v)});setTimeout(sfx.padav,700);}
+    if(L.safe){head+=' '+fill(HOST.padav,{amt:rupee(L.v)});setTimeout(function(){cue('padav');},700);}
   }else{
     head = fill(rand(HOST.wrong),{L:'ABCD'[S.q.a],opt:S.q.o[S.q.a]});
   }
@@ -621,7 +654,7 @@ function showNugget(won){
     setTimeout(()=>endGame(won?'won':'lost'),1400);
   }
 }
-function quit(){ sfx.quit(); endGame('quit'); }
+function quit(){ cue('quit'); endGame('quit'); }
 
 /* ---------- lifelines ---------- */
 function useLifeline(k){
@@ -631,19 +664,19 @@ function useLifeline(k){
     const wrong=[0,1,2,3].filter(i=>i!==S.q.a);
     S.removed=shuffle(wrong).slice(0,2);
     if(S.removed.includes(S.sel))S.sel=null;
-    sfx.whoosh();renderOpts();renderLifelines();renderTray();
+    cue('lifeline');renderOpts();renderLifelines();renderTray();
     say(HOST.fifty);
     return;
   }
   if(k==='flip'){
     S.ll.flip=false;
     const spent=Object.entries(S.ll).filter(([,v])=>!v).length;
-    sfx.whoosh();draw();render();
+    cue('lifeline');draw();render();
     say(HOST.flip+(spent>1?' Jo lifelines kharch ho chuki hain, wo wapas nahi aatin.':''));
     return;
   }
-  if(k==='poll'){S.ll.poll=false;sfx.whoosh();renderLifelines();say(HOST.poll);showPoll();return;}
-  if(k==='expert'){S.ll.expert=false;sfx.whoosh();renderLifelines();say(HOST.expert);showExpert();return;}
+  if(k==='poll'){S.ll.poll=false;cue('lifeline');renderLifelines();say(HOST.poll);showPoll();return;}
+  if(k==='expert'){S.ll.expert=false;cue('lifeline');renderLifelines();say(HOST.expert);showExpert();return;}
 }
 function pollNumbers(){
   const b=bandFor(S.i),a=S.q.a;
@@ -726,7 +759,7 @@ function endGame(how){
   S.over=true;stopBed();renderLadder();
   const amount=how==='lost'?guaranteed():how==='quit'?(S.i>0?LADDER[S.i-1].v:0):LADDER[15].v;
   const words=amount===0?'Zero':LADDER.find(r=>r.v===amount).w;
-  if(how==='won')sfx.win();
+  if(how==='won')cue('win');
   const head=how==='won'?'Saat crore!':how==='quit'?'Aapne game quit kiya':'Khel yahin khatam';
   const line=how==='won'
     ? `${S.name}, aaj ki raat aapke naam. Poori sixteen ki sixteen.`
