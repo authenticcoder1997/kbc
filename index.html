@@ -520,8 +520,10 @@ const BANTER=['angry-amitabh.mp3','main-amitabh-bol-raha-hu.mp3','puch-raha-hai-
   'gst-bst-cst.mp3','karachi-ka-number.mp3','purani-wali.mp3','nek-khyal.mp3','madhushala.mp3',
   'kyun-bane-crorepati.mp3','kbc-right-answer_AYv3mAo.mp3'];
 const AUD={},VOICE={};
+/* build-offline.py fills this in, so the standalone file needs no folder and no server */
+const EMBED={};
 function loadClip(file,store,key){
-  const el=new Audio('sounds/'+encodeURIComponent(file));
+  const el=new Audio(EMBED[file]||('sounds/'+encodeURIComponent(file)));
   el.preload='auto'; el.volume=.8;
   if(key==='bed'){el.loop=true;el.volume=.45;}
   el.addEventListener('canplaythrough',function(){store[key]=el;},{once:true});
