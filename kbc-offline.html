@@ -7,7 +7,7 @@
 <meta name="description" content="Kaun Banega Crorepati — 16 questions, four lifelines, and a padav under you. Take the hot seat.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2304060f'/%3E%3Ctext y='24' x='16' font-size='22' text-anchor='middle'%3E\ud83e\ude99%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'><defs><linearGradient id='a' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23fff2cd'/><stop offset='.5' stop-color='%23f6c453'/><stop offset='1' stop-color='%23a8781f'/></linearGradient></defs><rect width='72' height='72' fill='%2304060f'/><path d='M36 12.5 L52.5 21.7 52.5 40.3 36 49.5 19.5 40.3 19.5 21.7 Z' fill='%23080d24' stroke='url(%23a)' stroke-width='2.4'/><text x='36' y='42' text-anchor='middle' font-family='sans-serif' font-weight='800' font-size='26' fill='url(%23a)'>₹</text></svg>">
 <title>Kaun Banega Crorepati</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600&family=Mukta:wght@400;600;800&display=swap">
@@ -41,7 +41,11 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 
 /* ---------- frame ---------- */
 .wrap{max-width:1180px;margin:0 auto;padding:18px 16px 40px}
-.top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.mark{display:flex;align-items:center;gap:14px}
+.emblem{width:56px;height:56px;flex:0 0 auto;
+  filter:drop-shadow(0 0 14px rgba(246,196,83,.22))}
+@media (max-width:860px){.emblem{width:44px;height:44px}.mark{gap:10px}}
 .brand{font-family:var(--disp);font-size:clamp(20px,3.4vw,30px);letter-spacing:.02em;
   background:linear-gradient(180deg,#fff5d6,var(--gold) 55%,var(--gold-deep));
   -webkit-background-clip:text;background-clip:text;color:transparent}
@@ -205,7 +209,29 @@ input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px soli
 
 <div class="wrap">
   <div class="top">
-    <div class="brand">Kaun Banega Crorepati<small>Hot Seat &nbsp;·&nbsp; 16 Questions &nbsp;·&nbsp; ₹7 Crore</small></div>
+    <div class="mark">
+      <svg class="emblem" viewBox="0 0 72 72" role="img" aria-label="Kaun Banega Crorepati">
+        <defs>
+          <linearGradient id="au" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fff2cd"/><stop offset=".5" stop-color="#f6c453"/>
+            <stop offset="1" stop-color="#a8781f"/>
+          </linearGradient>
+        </defs>
+        <g fill="none" stroke="url(#au)" stroke-width="1" opacity=".45">
+          <path d="M36 3 L60.2 16.5 60.2 43.5 36 57 11.8 43.5 11.8 16.5 Z"/>
+          <path d="M36 9 L55 19.6 55 40.4 36 51 17 40.4 17 19.6 Z" opacity=".6"/>
+        </g>
+        <path d="M36 12.5 L52.5 21.7 52.5 40.3 36 49.5 19.5 40.3 19.5 21.7 Z"
+              fill="#080d24" stroke="url(#au)" stroke-width="1.6"/>
+        <text x="36" y="41" text-anchor="middle" font-family="Mukta, sans-serif"
+              font-weight="800" font-size="25" fill="url(#au)">₹</text>
+        <g stroke="url(#au)" stroke-width="1.4" stroke-linecap="round" opacity=".75">
+          <path d="M8 62 Q36 70 64 62"/>
+          <path d="M15 67 Q36 72.5 57 67" opacity=".5"/>
+        </g>
+      </svg>
+      <div class="brand">Kaun Banega Crorepati<small>Hot Seat &nbsp;·&nbsp; 16 Questions &nbsp;·&nbsp; ₹7 Crore</small></div>
+    </div>
     <div class="top-actions">
       <button class="chip" id="sound" aria-pressed="true">Sound on</button>
       <button class="chip" id="restart">New game</button>
@@ -452,6 +478,7 @@ function ac(){
   try{ if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();
        MASTER=AC.createGain();MASTER.gain.value=.9;MASTER.connect(AC.destination);} }catch(e){return null;}
   if(AC.state==='suspended')AC.resume();
+  try{ if(navigator.audioSession)navigator.audioSession.type='playback'; }catch(e){}
   return AC;
 }
 function note(f,dur,opts){
@@ -491,6 +518,12 @@ const sfx={
   wrong(){note(160,1,{type:'sawtooth',gain:.07,slide:55});note(110,1.2,{type:'square',gain:.035,at:.1,slide:40});},
   padav(){[392,523.25,659.25].forEach((f,i)=>note(f,.5,{type:'triangle',gain:.06,at:i*.13}));},
   quit(){[440,392,349.23].forEach((f,i)=>note(f,.5,{type:'sine',gain:.05,at:i*.17}));},
+  question(){note(587.33,.16,{type:'triangle',gain:.05});note(880,.3,{type:'triangle',gain:.055,at:.14});hit(.18,.03,1400);},
+  fifty(){[880,659.25].forEach((f,i)=>note(f,.22,{type:'square',gain:.045,at:i*.12}));hit(.3,.04,2200);},
+  poll(){hit(.7,.05,900);note(220,.7,{type:'sawtooth',gain:.035,slide:440});
+         [0,.12,.24].forEach((at,i)=>note(330+i*110,.3,{type:'triangle',gain:.03,at}));},
+  expert(){[0,.45].forEach(at=>{note(440,.18,{type:'sine',gain:.05,at});note(554.37,.18,{type:'sine',gain:.05,at:at+.2});});},
+  flip(){note(300,.45,{type:'triangle',gain:.05,slide:900});hit(.45,.05,3000);},
   win(){[523.25,659.25,783.99,1046.5,1318.5,1568].forEach((f,i)=>note(f,.6,{type:'triangle',gain:.08,at:i*.14}));
     [0,.14,.28,.42,.56,.7].forEach(at=>setTimeout(()=>hit(.2,.05,1200),at*1000));}
 };
@@ -546,6 +579,7 @@ function cue(name){
     return;
   }
   if(sfx[name])sfx[name]();
+  else sfx.pick();            /* an unmapped cue should still make a sound, not vanish */
 }
 function banter(){                                  /* one clip in four, between questions */
   if(!SOUND)return;
