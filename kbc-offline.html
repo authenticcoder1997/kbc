@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#04060f">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="description" content="Kaun Banega Crorepati — 16 questions, four lifelines, and a padav under you. Take the hot seat.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -211,7 +214,7 @@ input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px soli
   <div class="top">
     <div class="mark">
       <svg class="emblem" viewBox="0 0 96 96" role="img" aria-label="Kaun Banega Crorepati"><defs><linearGradient id="au" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2cd"/><stop offset=".5" stop-color="#f6c453"/><stop offset="1" stop-color="#a8781f"/></linearGradient><linearGradient id="cy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fe3ff"/><stop offset="1" stop-color="#3d7fd0"/></linearGradient></defs><circle cx="48" cy="48" r="46" fill="#0a1030" stroke="url(#au)" stroke-width="2"/><circle cx="48" cy="48" r="41" fill="none" stroke="url(#cy)" stroke-width="1.3"/><g transform="rotate(22.5 48 48)"><path d="M48 13.5 L48 18" stroke="url(#cy)" stroke-width="1.1" stroke-linecap="round" opacity=".7"/></g><g transform="rotate(67.5 48 48)"><path d="M48 13.5 L48 18" stroke="url(#cy)" stroke-width="1.1" stroke-linecap="round" opacity=".7"/></g><g transform="rotate(112.5 48 48)"><path d="M48 13.5 L48 18" stroke="url(#cy)" stroke-width="1.1" stroke-linecap="round" opacity=".7"/></g><g transform="rotate(157.5 48 48)"><path d="M48 13.5 L48 18" stroke="url(#cy)" stroke-width="1.1" stroke-linecap="round" opacity=".7"/></g><g transform="rotate(202.5 48 48)"><path d="M48 13.5 L48 18" stroke="url(#cy)" stroke-width="1.1" stroke-linecap="round" opacity=".7"/></g><g transform="rotate(247.5 48 48)"><path d="M48 13.5 L48 18" stroke="url(#cy)" stroke-width="1.1" stroke-linecap="round" opacity=".7"/></g><g transform="rotate(292.5 48 48)"><path d="M48 13.5 L48 18" stroke="url(#cy)" stroke-width="1.1" stroke-linecap="round" opacity=".7"/></g><g transform="rotate(337.5 48 48)"><path d="M48 13.5 L48 18" stroke="url(#cy)" stroke-width="1.1" stroke-linecap="round" opacity=".7"/></g><circle cx="48" cy="48" r="34" fill="#0d1741" stroke="url(#au)" stroke-width=".9" opacity=".9"/><g transform="rotate(0 48 48)"><text x="48" y="27" text-anchor="middle" font-family="Mukta, sans-serif" font-weight="800" font-size="11" fill="url(#au)" opacity=".9">₹</text></g><g transform="rotate(45 48 48)"><text x="48" y="27" text-anchor="middle" font-family="Mukta, sans-serif" font-weight="800" font-size="11" fill="url(#au)" opacity=".9">₹</text></g><g transform="rotate(90 48 48)"><text x="48" y="27" text-anchor="middle" font-family="Mukta, sans-serif" font-weight="800" font-size="11" fill="url(#au)" opacity=".9">₹</text></g><g transform="rotate(135 48 48)"><text x="48" y="27" text-anchor="middle" font-family="Mukta, sans-serif" font-weight="800" font-size="11" fill="url(#au)" opacity=".9">₹</text></g><g transform="rotate(180 48 48)"><text x="48" y="27" text-anchor="middle" font-family="Mukta, sans-serif" font-weight="800" font-size="11" fill="url(#au)" opacity=".9">₹</text></g><g transform="rotate(225 48 48)"><text x="48" y="27" text-anchor="middle" font-family="Mukta, sans-serif" font-weight="800" font-size="11" fill="url(#au)" opacity=".9">₹</text></g><g transform="rotate(270 48 48)"><text x="48" y="27" text-anchor="middle" font-family="Mukta, sans-serif" font-weight="800" font-size="11" fill="url(#au)" opacity=".9">₹</text></g><g transform="rotate(315 48 48)"><text x="48" y="27" text-anchor="middle" font-family="Mukta, sans-serif" font-weight="800" font-size="11" fill="url(#au)" opacity=".9">₹</text></g><circle cx="48" cy="48" r="16" fill="#080d24" stroke="url(#au)" stroke-width="1.6"/><text x="48" y="55" text-anchor="middle" font-family="Mukta, sans-serif" font-weight="800" font-size="19" fill="url(#au)">₹</text></svg>
-      <div class="brand">Kaun Banega Crorepati<small>Hot Seat &nbsp;·&nbsp; 16 Questions &nbsp;·&nbsp; ₹7 Crore</small></div>
+      <div class="brand">Kaun Banega Crorepati<small>Hot Seat &nbsp;·&nbsp; 16 Questions &nbsp;·&nbsp; ₹7 Crore &nbsp;·&nbsp; <span id="build"></span></small></div>
     </div>
     <div class="top-actions">
       <button class="chip" id="sound" aria-pressed="true">Sound on</button>
@@ -243,6 +246,26 @@ input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px soli
 <div id="overlay"></div>
 
 <script>
+/* ---- build stamp + self-update: deploy.sh rewrites BUILD on every push ---- */
+const BUILD='20260911-0349';
+(function checkForUpdate(){
+  if(location.protocol==='file:')return;                 /* offline build: nothing to check */
+  let tried=false;
+  try{tried=sessionStorage.getItem('kbc.reloaded')===BUILD;}catch(e){}
+  if(tried)return;                                        /* only ever reload once per build */
+  fetch(location.pathname+'?_='+Date.now(),{cache:'no-store'})
+    .then(function(r){return r.ok?r.text():null;})
+    .then(function(t){
+      if(!t)return;
+      const m=t.match(/const BUILD='20260911-0349']+)'/);
+      if(m&&m[1]!==BUILD){
+        try{sessionStorage.setItem('kbc.reloaded',m[1]);}catch(e){}
+        location.replace(location.pathname+'?v='+m[1]);
+      }
+    })
+    .catch(function(){});
+})();
+
 /* ============================ data ============================ */
 const LADDER=[
  [1000,'One Thousand'],[2000,'Two Thousand'],[3000,'Three Thousand'],[5000,'Five Thousand'],
@@ -866,6 +889,7 @@ function endGame(how){
 /* ---------- chrome ---------- */
 $('#sound').onclick=e=>{SOUND=!SOUND;if(!SOUND){stopBed();stopVoice();}e.target.setAttribute('aria-pressed',SOUND);
   e.target.textContent=SOUND?'Sound on':'Sound off';if(SOUND)sfx.pick();};
+$('#build').textContent=BUILD;
 $('#restart').onclick=()=>{document.querySelectorAll('.love').forEach(x=>x.remove());startScreen();};
 
 /* first paint: a live board behind the start sheet */
