@@ -247,7 +247,7 @@ input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px soli
 
 <script>
 /* ---- build stamp + self-update: deploy.sh rewrites BUILD on every push ---- */
-const BUILD='20260911-0459';//#stamp
+const BUILD='20260911-0610';//#stamp
 (function checkForUpdate(){
   if(location.protocol==='file:')return;                 /* offline build: nothing to check */
   let tried=false;
@@ -563,8 +563,29 @@ function loadClip(file,store,key){
   const el=new Audio(EMBED[file]||('sounds/'+encodeURIComponent(file)));
   el.preload='auto'; el.volume=.8;
   if(key==='bed'){el.loop=true;el.volume=.45;}
-  el.addEventListener('canplaythrough',function(){store[key]=el;},{once:true});
-  el.addEventListener('error',function(){},{once:true});
+  /* Register straight away. iOS ignores preload and never fires canplaythrough
+     until a gesture-driven play(), so waiting for it would leave every cue on
+     the synth fallback forever. Drop the clip only if it actually fails.       */
+  store[key]=el;
+  el.addEventListener('error',function(){delete store[key];},{once:true});
+}
+/* iOS will only play a clip later if that element was started inside a user
+   gesture at least once. Prime them all on the first tap, muted.              */
+let PRIMED=false;
+function primeAudio(){
+  if(PRIMED)return; PRIMED=true;
+  const els=[];
+  Object.keys(AUD).forEach(function(k){ if(k!=='theme'&&k!=='theme2')els.push(AUD[k]); });
+  Object.keys(VOICE).forEach(function(k){els.push(VOICE[k]);});
+  els.forEach(function(a){
+    try{
+      a.muted=true;
+      const p=a.play();
+      if(p&&p.then)p.then(function(){a.pause();a.currentTime=0;a.muted=false;})
+                    .catch(function(){a.muted=false;});
+      else{a.pause();a.currentTime=0;a.muted=false;}
+    }catch(e){a.muted=false;}
+  });
 }
 Object.keys(PACK).forEach(function(k){loadClip(PACK[k],AUD,k);});
 BANTER.forEach(function(f,i){loadClip(f,VOICE,'b'+i);});
@@ -865,7 +886,7 @@ function startScreen(){
     <input type="text" id="nm" placeholder="Your name" maxlength="24" autocomplete="off">
     <div class="row"><button class="btn" id="go"><span class="hi">Baithiye</span>Take the hot seat</button></div>`,false);
   const inp=$('#nm');inp.focus();
-  const go=()=>{$('#overlay').innerHTML='';newGame(inp.value.trim());};
+  const go=()=>{primeAudio();$('#overlay').innerHTML='';newGame(inp.value.trim());};
   $('#go').onclick=go;
   inp.onkeydown=e=>{if(e.key==='Enter')go();};
 }
