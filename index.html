@@ -84,6 +84,17 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
   transform:rotate(-32deg);opacity:.8}
 .ll.pending:disabled::after{display:none}
 
+.clock{font-family:var(--cond);font-size:15px;letter-spacing:.12em;margin-left:12px;
+  padding:2px 12px;border-radius:999px;border:1px solid var(--rim-soft);color:var(--chalk);
+  font-variant-numeric:tabular-nums}
+.clock.warn{color:var(--amber);border-color:var(--gold-deep)}
+.clock.crit{color:var(--wrong);border-color:var(--wrong);animation:beat 1s ease-in-out infinite}
+.clock.done{color:var(--muted);border-color:var(--rim-soft);animation:none}
+.clockbar{height:3px;background:#0a1130;overflow:hidden}
+.clockbar i{display:block;height:100%;width:100%;transform-origin:left;
+  background:linear-gradient(90deg,var(--right),#9fe3ff);transition:width 1s linear}
+.clockbar.warn i{background:linear-gradient(90deg,var(--gold),var(--amber))}
+.clockbar.crit i{background:linear-gradient(90deg,var(--wrong),#ff8fa0);transition:width .25s linear}
 .host{font-size:15.5px;color:#c6cfee;min-height:44px;font-style:italic;line-height:1.45;
   display:flex;gap:12px;align-items:center;padding:6px 0}
 .host::before{content:"";flex:0 0 3px;align-self:stretch;border-radius:2px;
@@ -228,7 +239,9 @@ input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px soli
         <span class="qno" id="qno">Question 1</span>
         <span class="for" id="qfor">for ₹1,000</span>
         <span class="guar" id="guar">Guaranteed <b>₹0</b></span>
+        <span class="clock" id="clock">0:30</span>
       </div>
+      <div class="clockbar" id="clockbar"><i></i></div>
       <div class="lifelines" id="lifelines"></div>
       <div class="host" id="host"></div>
       <div class="qcard"><div class="qcard-in">
@@ -247,7 +260,7 @@ input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px soli
 
 <script>
 /* ---- build stamp + self-update: deploy.sh rewrites BUILD on every push ---- */
-const BUILD='20260911-0611';//#stamp
+const BUILD='20260911-0650';//#stamp
 (function checkForUpdate(){
   if(location.protocol==='file:')return;                 /* offline build: nothing to check */
   let tried=false;
@@ -650,6 +663,39 @@ function updateBed(){
   if(!S||S.over||S.locked||S.reveal||bandFor(S.i)<2)stopBed();else startBed(S.i);
 }
 
+/* ============================ clock ============================ */
+const QTIME=30;                       /* seconds per question */
+let TICKER=null,TLEFT=QTIME,TPAUSE=0;
+function startTimer(){
+  stopTimer();TLEFT=QTIME;paintTimer();
+  TICKER=setInterval(function(){
+    if(TPAUSE||!S||S.locked||S.reveal||S.over)return;
+    TLEFT--;paintTimer();
+    if(TLEFT<=5&&TLEFT>0)sfx.tick();
+    if(TLEFT<=0){stopTimer();timeUp();}
+  },1000);
+}
+function stopTimer(){ if(TICKER){clearInterval(TICKER);TICKER=null;} }
+function paintTimer(){
+  const c=$('#clock'),bar=$('#clockbar');
+  if(!c)return;
+  const m=Math.floor(Math.max(TLEFT,0)/60),sec=Math.max(TLEFT,0)%60;
+  c.textContent=m+':'+(sec<10?'0':'')+sec;
+  const cls=TLEFT<=5?'crit':TLEFT<=10?'warn':'';
+  c.className='clock '+cls;
+  bar.className='clockbar '+cls;
+  bar.firstElementChild.style.width=Math.max(0,(TLEFT/QTIME)*100)+'%';
+}
+function timeUp(){
+  S.locked=true;S.reveal=true;S.showAns=true;stopBed();
+  $('#clock').className='clock done';
+  renderOpts();renderLifelines();renderTray();
+  cue('wrong');
+  say('Samay samapt! Sahi jawaab tha '+'ABCD'[S.q.a]+' — '+S.q.o[S.q.a]+'.');
+  $('#tray').innerHTML='<div class="nugget"><b>Waise aapko bata dein —</b> '+S.q.f+'</div>';
+  setTimeout(function(){endGame('timeup');},2400);
+}
+
 /* ============================ state ============================ */
 let S=null;
 /* name entered -> who loves whom. Adding another is one line. */
@@ -664,7 +710,7 @@ function newGame(name){
   if(love)name=love[1];
   S={name:name||'Aap',i:0,banked:0,over:false,locked:false,sel:null,used,
      q:null,removed:[],ll:{fifty:true,poll:true,expert:true,flip:true},pending:null};
-  draw();render();cue('theme');
+  draw();render();cue('theme');startTimer();
   if(love)loveNote(love[0],love[1]);
 }
 function loveNote(who,whom){
@@ -761,7 +807,7 @@ document.addEventListener('click',e=>{
 });
 
 async function lock(){
-  S.locked=true;stopBed();
+  S.locked=true;stopBed();stopTimer();$('#clock').className='clock done';
   say(fill(rand(HOST.lock),{L:'ABCD'[S.sel],opt:S.q.o[S.sel]}));
   renderOpts();renderLifelines();renderTray();
   cue('lock');
@@ -792,7 +838,7 @@ function showNugget(won){
     `<div class="nugget"><b>Waise aapko bata dein —</b> ${S.q.f}</div>`+
     (won&&S.i<15?`<button class="btn" id="nextbtn">Next question</button>`:'');
   if(won&&S.i<15){
-    $('#nextbtn').onclick=()=>{S.i++;S.reveal=false;S.showAns=false;draw();render();};
+    $('#nextbtn').onclick=()=>{S.i++;S.reveal=false;S.showAns=false;draw();render();startTimer();};
   }else{
     setTimeout(()=>endGame(won?'won':'lost'),1400);
   }
@@ -814,7 +860,7 @@ function useLifeline(k){
   if(k==='flip'){
     S.ll.flip=false;
     const spent=Object.entries(S.ll).filter(([,v])=>!v).length;
-    cue('flip');draw();render();
+    cue('flip');draw();render();startTimer();
     say(HOST.flip+(spent>1?' Jo lifelines kharch ho chuki hain, wo wapas nahi aatin.':''));
     return;
   }
@@ -884,8 +930,10 @@ function showExpert(){
 
 /* ---------- overlays ---------- */
 function overlay(html,dismissible=true){
+  TPAUSE++;                                    /* the clock waits for lifelines */
   $('#overlay').innerHTML=`<div class="veil"><div class="sheet">${html}</div></div>`;
-  if(dismissible)$('#overlay').querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{$('#overlay').innerHTML='';});
+  if(dismissible)$('#overlay').querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{
+    $('#overlay').innerHTML='';TPAUSE=Math.max(0,TPAUSE-1);});
 }
 function startScreen(){
   overlay(`<h3>Hot Seat</h3><div class="sub">Kaun Banega Crorepati</div>
@@ -894,20 +942,22 @@ function startScreen(){
     <input type="text" id="nm" placeholder="Your name" maxlength="24" autocomplete="off">
     <div class="row"><button class="btn" id="go"><span class="hi">Baithiye</span>Take the hot seat</button></div>`,false);
   const inp=$('#nm');inp.focus();
-  const go=()=>{primeAudio();$('#overlay').innerHTML='';newGame(inp.value.trim());};
+  const go=()=>{primeAudio();$('#overlay').innerHTML='';TPAUSE=0;newGame(inp.value.trim());};
   $('#go').onclick=go;
   inp.onkeydown=e=>{if(e.key==='Enter')go();};
 }
 function endGame(how){
-  S.over=true;stopBed();stopVoice();renderLadder();
-  const amount=how==='lost'?guaranteed():how==='quit'?(S.i>0?LADDER[S.i-1].v:0):LADDER[15].v;
+  S.over=true;stopBed();stopVoice();stopTimer();renderLadder();
+  const amount=(how==='lost'||how==='timeup')?guaranteed():how==='quit'?(S.i>0?LADDER[S.i-1].v:0):LADDER[15].v;
   const words=amount===0?'Zero':LADDER.find(r=>r.v===amount).w;
   if(how==='won')cue('win');
-  const head=how==='won'?'Saat crore!':how==='quit'?'Aapne game quit kiya':'Khel yahin khatam';
+  const head=how==='won'?'Saat crore!':how==='quit'?'Aapne game quit kiya':how==='timeup'?'Samay samapt':'Khel yahin khatam';
   const line=how==='won'
     ? `${S.name}, aaj ki raat aapke naam. Poori sixteen ki sixteen.`
     : how==='quit'
       ? `Samajhdaari ka faisla. ${S.i} sawaal, aur ye raqam aapke naam.`
+      : how==='timeup'
+      ? `Ghadi ruk gayi. ${S.i+1}ve sawaal par samay khatam — lekin padav aapke saath hai.`
       : `Aap ${S.i+1}ve sawaal par ruke. Lekin padav paar kar chuke the, isliye —`;
   overlay(`<h3>${head}</h3><div class="sub">${S.name}</div>
     <p>${line}</p>
