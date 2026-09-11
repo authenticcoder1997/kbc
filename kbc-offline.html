@@ -247,7 +247,7 @@ input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px soli
 
 <script>
 /* ---- build stamp + self-update: deploy.sh rewrites BUILD on every push ---- */
-const BUILD='20260911-0610';//#stamp
+const BUILD='20260911-0611';//#stamp
 (function checkForUpdate(){
   if(location.protocol==='file:')return;                 /* offline build: nothing to check */
   let tried=false;
@@ -586,6 +586,14 @@ function primeAudio(){
       else{a.pause();a.currentTime=0;a.muted=false;}
     }catch(e){a.muted=false;}
   });
+  setTimeout(soundLabel,1500);
+}
+/* Say out loud which audio is actually in play, so a silent phone is diagnosable */
+function soundLabel(){
+  const chip=$('#sound');
+  if(!SOUND){chip.textContent='Sound off';return;}
+  const n=Object.keys(AUD).length;
+  chip.textContent = n ? 'Sound on · pack '+n : 'Sound on · synth';
 }
 Object.keys(PACK).forEach(function(k){loadClip(PACK[k],AUD,k);});
 BANTER.forEach(function(f,i){loadClip(f,VOICE,'b'+i);});
@@ -915,7 +923,7 @@ function endGame(how){
 
 /* ---------- chrome ---------- */
 $('#sound').onclick=e=>{SOUND=!SOUND;if(!SOUND){stopBed();stopVoice();}e.target.setAttribute('aria-pressed',SOUND);
-  e.target.textContent=SOUND?'Sound on':'Sound off';if(SOUND)sfx.pick();};
+  soundLabel();if(SOUND){primeAudio();sfx.pick();}};
 $('#build').textContent=BUILD;
 $('#restart').onclick=()=>{document.querySelectorAll('.love').forEach(x=>x.remove());startScreen();};
 
