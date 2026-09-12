@@ -187,6 +187,19 @@ input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px soli
 .recap{font-size:14.5px;color:var(--muted);line-height:1.6;margin-bottom:20px}
 .recap b{color:var(--chalk);font-weight:600}
 .row{display:flex;gap:10px;flex-wrap:wrap}
+.veil.home{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.homecard{display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;padding:24px}
+.emblem.big{width:140px;height:140px}
+.hometitle{font-family:var(--disp);font-weight:400;font-size:clamp(34px,8vw,58px);line-height:1.02;margin:0;
+  background:linear-gradient(180deg,#fff5d6,var(--gold) 55%,var(--gold-deep));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.hometag{font-family:var(--cond);letter-spacing:.24em;text-transform:uppercase;font-size:13px;
+  color:var(--muted);margin:0}
+.btn.big{font-size:19px;padding:16px 56px;letter-spacing:.26em;margin-top:6px}
+.credit{position:absolute;left:0;right:0;bottom:30px;text-align:center;
+  font-family:var(--cond);letter-spacing:.26em;text-transform:uppercase;font-size:12px;color:var(--muted)}
+.credit b{color:var(--gold);font-weight:600}
+@media (max-width:860px){.emblem.big{width:112px;height:112px}.credit{bottom:22px}}
 .love{opacity:1;position:fixed;left:50%;top:24px;transform:translateX(-50%);z-index:30;
   font-family:var(--disp);font-size:clamp(19px,4.2vw,30px);letter-spacing:.02em;white-space:nowrap;
   display:flex;gap:14px;align-items:center;padding:14px 30px;
@@ -260,7 +273,7 @@ input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px soli
 
 <script>
 /* ---- build stamp + self-update: deploy.sh rewrites BUILD on every push ---- */
-const BUILD='20260912-1531';//#stamp
+const BUILD='20260912-1533';//#stamp
 (function checkForUpdate(){
   if(location.protocol==='file:')return;                 /* offline build: nothing to check */
   let tried=false;
@@ -708,7 +721,7 @@ const LOVE={
   piush: {as:'Piush',  pair:['Piyush','Snigdha']},
   bipul: {as:'Bipul',  pair:['Bipul','Kajal']},
   shweta:{as:'Shweta', pair:['Bipul','Kajal']},
-  seta:  {as:'Seta',   pair:['Bipul','Kajal']}
+  sweta: {as:'Sweta',  pair:['Bipul','Kajal']}
 };
 function newGame(name){
   const used=BANK.map(()=>new Set());
@@ -947,6 +960,16 @@ function overlay(html,dismissible=true){
   if(dismissible)$('#overlay').querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{
     $('#overlay').innerHTML='';TPAUSE=Math.max(0,TPAUSE-1);});
 }
+function homeScreen(){
+  const badge=document.querySelector('.emblem').outerHTML.replace('class="emblem"','class="emblem big"');
+  $('#overlay').innerHTML=
+    '<div class="veil home"><div class="homecard">'+badge+
+    '<h1 class="hometitle">Kaun Banega<br>Crorepati</h1>'+
+    '<p class="hometag">16 Sawaal &nbsp;·&nbsp; 4 Lifelines &nbsp;·&nbsp; ₹7 Crore</p>'+
+    '<button class="btn big" id="play">Play</button></div>'+
+    '<div class="credit">Game made by <b>Chotu</b></div></div>';
+  $('#play').onclick=function(){primeAudio();startScreen();};
+}
 function startScreen(){
   overlay(`<h3>Hot Seat</h3><div class="sub">Kaun Banega Crorepati</div>
     <p>Sixteen questions stand between you and ₹7 crore. Four lifelines stand beside you.
@@ -993,7 +1016,7 @@ $('#restart').onclick=()=>{document.querySelectorAll('.love').forEach(x=>x.remov
 S={name:'Aap',i:0,banked:0,over:false,locked:false,sel:null,used:BANK.map(()=>new Set()),
    q:null,removed:[],ll:{fifty:true,poll:true,expert:true,flip:true}};
 draw();render();
-startScreen();
+homeScreen();
 </script>
 
 </body>
