@@ -260,7 +260,7 @@ input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px soli
 
 <script>
 /* ---- build stamp + self-update: deploy.sh rewrites BUILD on every push ---- */
-const BUILD='20260912-1454';//#stamp
+const BUILD='20260912-1531';//#stamp
 (function checkForUpdate(){
   if(location.protocol==='file:')return;                 /* offline build: nothing to check */
   let tried=false;
@@ -705,7 +705,10 @@ const LOVE={
   rajiv: {as:'Rajiv',  text:'Rajiv shadi kar le'},
   rajeev:{as:'Rajeev', text:'Rajiv shadi kar le'},
   piyush:{as:'Piyush', pair:['Piyush','Snigdha']},
-  piush: {as:'Piush',  pair:['Piyush','Snigdha']}
+  piush: {as:'Piush',  pair:['Piyush','Snigdha']},
+  bipul: {as:'Bipul',  pair:['Bipul','Kajal']},
+  shweta:{as:'Shweta', pair:['Bipul','Kajal']},
+  seta:  {as:'Seta',   pair:['Bipul','Kajal']}
 };
 function newGame(name){
   const used=BANK.map(()=>new Set());
