@@ -260,7 +260,7 @@ input[type=text]{width:100%;padding:12px 14px;background:#080d24;border:1px soli
 
 <script>
 /* ---- build stamp + self-update: deploy.sh rewrites BUILD on every push ---- */
-const BUILD='20260911-0650';//#stamp
+const BUILD='20260912-1438';//#stamp
 (function checkForUpdate(){
   if(location.protocol==='file:')return;                 /* offline build: nothing to check */
   let tried=false;
@@ -700,26 +700,33 @@ function timeUp(){
 let S=null;
 /* name entered -> who loves whom. Adding another is one line. */
 const LOVE={
-  arya:['Parag','Arya'],
-  smriti:['Sanjay','Smriti']
+  arya:  {as:'Arya',   pair:['Parag','Arya']},
+  smriti:{as:'Smriti', pair:['Sanjay','Smriti']},
+  rajiv: {as:'Rajiv',  text:'Rajiv shadi kar le'},
+  rajeev:{as:'Rajeev', text:'Rajiv shadi kar le'}
 };
 function newGame(name){
   const used=BANK.map(()=>new Set());
   name=(name||'').trim();
   const love=LOVE[name.toLowerCase()];
-  if(love)name=love[1];
+  if(love)name=love.as;
   S={name:name||'Aap',i:0,banked:0,over:false,locked:false,sel:null,used,
      q:null,removed:[],ll:{fifty:true,poll:true,expert:true,flip:true},pending:null};
   draw();render();cue('theme');startTimer();
-  if(love)loveNote(love[0],love[1]);
+  if(love)loveNote(love);
 }
-function loveNote(who,whom){
+function loveNote(e){
   document.querySelectorAll('.love').forEach(function(x){x.remove();});
   const d=document.createElement('div');
   d.className='love';
-  d.innerHTML=who+' <span class="hrt">\u2665</span> '+whom;
+  if(e.pair){
+    d.innerHTML=e.pair[0]+' <span class="hrt">\u2665</span> '+e.pair[1];
+    say(e.pair[0]+' loves '+e.pair[1]+'.');
+  }else{
+    d.innerHTML='<span class="hrt">\u2665</span> '+e.text;
+    say(e.text+'.');
+  }
   document.body.appendChild(d);
-  say(who+' loves '+whom+'.');
   setTimeout(function(){[392,523.25,659.25,783.99].forEach(function(f,i){
     note(f,.55,{type:'triangle',gain:.06,at:i*.14});});},250);
   setTimeout(function(){d.classList.add('out');setTimeout(function(){d.remove();},600);},4600);
